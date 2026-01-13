@@ -13,7 +13,9 @@ const scrollToId = (id: string) => {
   if (typeof window === "undefined") return;
   const el = document.getElementById(id);
   if (!el) return;
-  const headerOffset = 80;
+  // Dynamic header offset based on screen size
+  const isMobile = window.innerWidth < 768;
+  const headerOffset = isMobile ? 64 : 80; // h-16 = 64px, md:h-20 = 80px
   const elementPosition = el.getBoundingClientRect().top;
   const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
   
@@ -68,7 +70,10 @@ function TypewriterText({ text, speed = 50, className = "" }: { text: string; sp
 
 // Floating Particles Background
 function FloatingParticles() {
-  const particles = Array.from({ length: 20 }, (_, i) => i);
+  // Reduce particles on mobile for better performance
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const particleCount = isMobile ? 6 : 12;
+  const particles = Array.from({ length: particleCount }, (_, i) => i);
   const [dimensions, setDimensions] = useState({ width: 1920, height: 1080 });
 
   useEffect(() => {
@@ -87,6 +92,10 @@ function FloatingParticles() {
       {particles.map((i) => {
         const startX = Math.random() * dimensions.width;
         const startY = Math.random() * dimensions.height;
+        // Simpler animation on mobile for better performance
+        const duration = isMobile ? 25 + Math.random() * 15 : 15 + Math.random() * 10;
+        const movement = isMobile ? 200 : 400;
+        
         return (
           <motion.div
             key={i}
@@ -97,12 +106,12 @@ function FloatingParticles() {
               opacity: 0
             }}
             animate={{
-              y: [startY, startY + (Math.random() * 400 - 200), startY],
-              x: [startX, startX + (Math.random() * 400 - 200), startX],
+              y: [startY, startY + (Math.random() * movement - movement/2), startY],
+              x: [startX, startX + (Math.random() * movement - movement/2), startX],
               opacity: [0, 0.6, 0],
             }}
             transition={{
-              duration: 15 + Math.random() * 10,
+              duration: duration,
               repeat: Infinity,
               delay: Math.random() * 5,
               ease: "linear"
@@ -335,16 +344,16 @@ function HeroSection() {
   return (
     <section
       id="hero"
-      className="section-padding section-container relative flex min-h-[80vh] items-center justify-center overflow-visible md:min-h-[90vh]"
+      className="section-padding section-container relative flex min-h-[80vh] items-center justify-center overflow-hidden md:min-h-[90vh]"
     >
       <motion.div
-        className="pointer-events-none absolute -left-40 top-[-160px] h-80 w-80 rounded-full bg-sky-500/40 blur-3xl md:-left-56"
-        animate={{ x: [0, 24, -16, 0], opacity: [0.5, 0.9, 0.7, 0.5] }}
+        className="pointer-events-none absolute -left-20 top-[-80px] h-40 w-40 rounded-full bg-sky-500/40 blur-3xl md:-left-56 md:top-[-160px] md:h-80 md:w-80"
+        animate={{ x: [0, 12, -8, 0], opacity: [0.5, 0.9, 0.7, 0.5] }}
         transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
       />
       <motion.div
-        className="pointer-events-none absolute -right-32 bottom-[-120px] h-80 w-80 rounded-full bg-violet-500/35 blur-3xl md:-right-48"
-        animate={{ x: [0, -18, 24, 0], opacity: [0.45, 0.85, 0.7, 0.45] }}
+        className="pointer-events-none absolute -right-16 bottom-[-60px] h-40 w-40 rounded-full bg-violet-500/35 blur-3xl md:-right-48 md:bottom-[-120px] md:h-80 md:w-80"
+        animate={{ x: [0, -9, 12, 0], opacity: [0.45, 0.85, 0.7, 0.45] }}
         transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
       />
       <motion.div
