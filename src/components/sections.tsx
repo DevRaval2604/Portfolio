@@ -311,7 +311,7 @@ export function Shell() {
           <ContactSection />
         </main>
 
-        <footer className="border-t border-slate-800/70 bg-slate-950 py-6">
+        <footer className="border-t border-slate-800/70 bg-slate-950 py-4 md:py-6 pb-[calc(1rem+env(safe-area-inset-bottom))]">
           <div className="section-container flex flex-col items-center justify-center gap-3 text-xs text-slate-500 md:flex-row">
             <span>© 2026 Dev Raval. Built with passion and purpose.</span>
           </div>
