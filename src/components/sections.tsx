@@ -206,7 +206,7 @@ export function Shell() {
         style={{ scaleX: scrollProgress }}
       />
 
-      <header className="fixed top-0 left-0 right-0 z-[9999] w-full border-b border-slate-800/70 bg-slate-950/80 backdrop-blur-xl">
+      <header className="fixed top-0 left-0 right-0 z-[9999] w-full border-b border-slate-800/70 bg-slate-950/95 md:bg-slate-950/80 md:backdrop-blur-xl">
         <div className="section-container flex h-16 items-center justify-between md:h-20">
           <motion.button
             initial={{ opacity: 0, x: -20 }}
