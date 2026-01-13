@@ -3,26 +3,34 @@
 import { motion, useScroll, useSpring, useAnimation } from "framer-motion";
 import {
   FiGithub,
-  FiMenu,
-  FiDownload
+  FiMenu
 } from "react-icons/fi";
 import classNames from "classnames";
 import { useEffect, useState } from "react";
 
-const scrollToId = (id: string) => {
+const scrollToId = (id: string, delay: number = 0) => {
   if (typeof window === "undefined") return;
   const el = document.getElementById(id);
   if (!el) return;
-  // Dynamic header offset based on screen size
-  const isMobile = window.innerWidth < 768;
-  const headerOffset = isMobile ? 64 : 80; // h-16 = 64px, md:h-20 = 80px
-  const elementPosition = el.getBoundingClientRect().top;
-  const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
   
-  window.scrollTo({
-    top: offsetPosition,
-    behavior: "smooth"
-  });
+  const performScroll = () => {
+    // Dynamic header offset based on screen size
+    const isMobile = window.innerWidth < 768;
+    const headerOffset = isMobile ? 72 : 88; // Slightly more offset for better alignment
+    const elementPosition = el.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+    
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: "smooth"
+    });
+  };
+  
+  if (delay > 0) {
+    setTimeout(performScroll, delay);
+  } else {
+    performScroll();
+  }
 };
 
 const navItems = [
@@ -198,7 +206,7 @@ export function Shell() {
         className="fixed inset-x-0 top-0 z-50 h-[2px] origin-left bg-gradient-to-r from-sky-400 via-fuchsia-500 to-emerald-400"
         style={{ scaleX: scrollProgress }}
       />
-      <header className="sticky top-0 z-40 border-b border-slate-800/70 bg-slate-950/80 backdrop-blur-xl">
+      <header className="fixed top-0 left-0 right-0 w-full z-40 border-b border-slate-800/70 bg-slate-950/80 backdrop-blur-xl">
         <div className="section-container flex h-16 items-center justify-between md:h-20">
           <motion.button
             initial={{ opacity: 0, x: -20 }}
@@ -260,27 +268,27 @@ export function Shell() {
 
         <div
           id="mobile-menu"
-          className="hidden border-t border-slate-800/70 bg-slate-950/95 md:hidden"
+          className="fixed inset-x-0 top-16 z-50 hidden border-t border-slate-800/70 bg-slate-950/95 backdrop-blur-xl md:hidden"
         >
           <div className="section-container flex flex-col gap-2 py-4">
             {navItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => {
-                  scrollToId(item.id);
                   const menu = document.getElementById("mobile-menu");
                   if (menu) menu.classList.add("hidden");
+                  scrollToId(item.id, 100); // Small delay to let menu close
                 }}
-                className="w-full rounded-xl px-4 py-2 text-left text-sm text-slate-100 transition-colors hover:bg-slate-900/80"
+                className="w-full rounded-xl px-4 py-3 text-left text-sm text-slate-100 transition-colors hover:bg-slate-900/80"
               >
                 {item.label}
               </button>
             ))}
             <button
               onClick={() => {
-                scrollToId("contact");
                 const menu = document.getElementById("mobile-menu");
                 if (menu) menu.classList.add("hidden");
+                scrollToId("contact", 100); // Small delay to let menu close
               }}
               className="mt-3 rounded-xl bg-sky-500 px-4 py-3 text-center text-sm font-semibold text-slate-950 shadow-glow-cyan hover:shadow-glow-purple"
             >
@@ -393,10 +401,13 @@ function HeroSection() {
             className="text-slate-300"
           />
         </motion.p>
+        
+        {/* Buttons Container */}
         <motion.div
           variants={heroItem}
           className="mt-8 flex flex-wrap items-center justify-center gap-4"
         >
+          {/* View My Work Button */}
           <motion.button
             className="primary-btn"
             onClick={() => scrollToId("projects")}
@@ -422,31 +433,36 @@ function HeroSection() {
               ↓
             </motion.span>
           </motion.button>
-          <motion.button 
-            className="outline-btn gap-2"
-            onClick={() => {
-              const link = document.createElement('a');
-              link.href = '/resume.pdf';
-              link.download = 'Dev_Raval_Resume.pdf';
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-            }}
-            whileHover={{ scale: 1.05, borderColor: "rgb(56, 189, 248)" }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <FiDownload className="h-4 w-4" />
-            Download Resume
-          </motion.button>
+
+          {/* Contact Me Button - Updated to match */}
           <motion.button
-            className="outline-btn"
+            key="contact-btn"
+            className="primary-btn" 
             onClick={() => scrollToId("contact")}
-            whileHover={{ scale: 1.05, borderColor: "rgb(56, 189, 248)" }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            animate={{
+              boxShadow: [
+                "0 0 20px rgba(56, 189, 248, 0.4)",
+                "0 0 40px rgba(56, 189, 248, 0.6)",
+                "0 0 20px rgba(56, 189, 248, 0.4)"
+              ]
+            }}
+            transition={{
+              boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+            }}
           >
             Contact Me
+            <motion.span 
+              className="ml-2 text-base inline-block"
+              animate={{ y: [0, 4, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut"}}
+            >
+              ↓
+            </motion.span>
           </motion.button>
         </motion.div>
+
         <motion.div
           variants={heroItem}
           className="mt-16 flex flex-col items-center gap-3 text-xs uppercase tracking-[0.3em] text-slate-500"
