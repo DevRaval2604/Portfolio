@@ -199,6 +199,28 @@ export function Shell() {
     restDelta: 0.001
   });
 
+  const [iosTop, setIosTop] = useState(0);
+  const [isIOS, setIsIOS] = useState(false);
+
+  useEffect(() => {
+    const ios =
+      typeof window !== "undefined" &&
+      /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+    setIsIOS(ios);
+
+    if (!ios) return;
+
+    const onScroll = () => {
+      setIosTop(window.scrollY);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <>
       <motion.div
@@ -206,7 +228,12 @@ export function Shell() {
         style={{ scaleX: scrollProgress }}
       />
 
-      <header className="fixed top-0 left-0 right-0 z-[9999] w-full border-b border-slate-800/70 bg-slate-950/95 md:bg-slate-950/80 md:backdrop-blur-xl">
+      <header
+        style={isIOS ? { top: iosTop } : undefined}
+        className={`${
+          isIOS ? "absolute" : "fixed"
+        } left-0 right-0 z-[9999] w-full border-b border-slate-800/70 bg-slate-950`}
+      >
         <div className="section-container flex h-16 items-center justify-between md:h-20">
           <motion.button
             initial={{ opacity: 0, x: -20 }}
@@ -256,9 +283,7 @@ export function Shell() {
             className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-700 bg-slate-900/70 text-slate-200 transition-colors hover:border-sky-500/70 md:hidden"
             onClick={() => {
               const menu = document.getElementById("mobile-menu");
-              if (menu) {
-                menu.classList.toggle("hidden");
-              }
+              if (menu) menu.classList.toggle("hidden");
             }}
             aria-label="Toggle navigation"
           >
@@ -268,9 +293,10 @@ export function Shell() {
 
         <div
           id="mobile-menu"
-          className="fixed inset-x-0 top-16 z-[9999] hidden border-t border-slate-800/70 bg-slate-950/95 md:backdrop-blur-xl md:hidden"
+          className={`${
+            isIOS ? "absolute" : "fixed"
+          } inset-x-0 top-16 z-[9999] hidden border-t border-slate-800/70 bg-slate-950 md:hidden`}
         >
-
           <div className="section-container flex flex-col gap-2 py-4">
             {navItems.map((item) => (
               <button
