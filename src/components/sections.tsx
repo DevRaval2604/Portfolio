@@ -206,7 +206,7 @@ export function Shell() {
         style={{ scaleX: scrollProgress }}
       />
 
-      <header className="fixed top-0 left-0 right-0 z-[9999] w-full border-b border-slate-800/70 bg-slate-950/80 backdrop-blur-xl">
+      <header className="fixed top-0 left-0 right-0 z-[9999] w-full transform-noneborder-b border-slate-800/70 bg-slate-950/80 backdrop-blur-xl">
         <div className="section-container flex h-16 items-center justify-between md:h-20">
           <motion.button
             initial={{ opacity: 0, x: -20 }}
@@ -268,7 +268,7 @@ export function Shell() {
 
         <div
           id="mobile-menu"
-          className="fixed inset-x-0 top-16 z-[9999] hidden border-t border-slate-800/70 bg-slate-950/95 backdrop-blur-xl md:hidden"
+          className="fixed inset-x-0 top-16 z-[9999] transform-none hidden border-t border-slate-800/70 bg-slate-950/95 backdrop-blur-xl md:hidden"
         >
           <div className="section-container flex flex-col gap-2 py-4">
             {navItems.map((item) => (
