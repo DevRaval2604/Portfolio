@@ -8,6 +8,30 @@ import {
 import classNames from "classnames";
 import { useEffect, useState } from "react";
 
+export function useIOSFixedFallback() {
+  const [top, setTop] = useState(0);
+
+  useEffect(() => {
+    const isIOS =
+      typeof window !== "undefined" &&
+      /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+    if (!isIOS) return;
+
+    const onScroll = () => {
+      setTop(window.scrollY);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return top;
+}
+
+
 const scrollToId = (id: string, delay: number = 0) => {
   if (typeof window === "undefined") return;
   const el = document.getElementById(id);
@@ -191,8 +215,6 @@ function AnimatedCounter({ target, suffix = "", className = "" }: { target: numb
   return <span className={className}>{count}{suffix}</span>;
 }
 
-import { useRef } from "react";
-
 export function Shell() {
   const { scrollYProgress } = useScroll();
   const scrollProgress = useSpring(scrollYProgress, {
@@ -201,36 +223,6 @@ export function Shell() {
     restDelta: 0.001
   });
 
-  const headerRef = useRef<HTMLDivElement | null>(null);
-  const tickingRef = useRef(false);
-  const isIOSRef = useRef(false);
-
-  useEffect(() => {
-    const isIOS =
-      typeof window !== "undefined" &&
-      /iPad|iPhone|iPod/.test(navigator.userAgent);
-
-    isIOSRef.current = isIOS;
-    if (!isIOS) return;
-
-    const handleScroll = () => {
-      if (tickingRef.current) return;
-      tickingRef.current = true;
-
-      requestAnimationFrame(() => {
-        if (headerRef.current) {
-          headerRef.current.style.transform = `translateY(${window.scrollY}px)`;
-        }
-        tickingRef.current = false;
-      });
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
     <>
       <motion.div
@@ -238,14 +230,7 @@ export function Shell() {
         style={{ scaleX: scrollProgress }}
       />
 
-      <header
-        ref={headerRef}
-        className={`${
-          isIOSRef.current
-            ? "absolute will-change-transform"
-            : "fixed"
-        } top-0 left-0 right-0 z-[9999] w-full border-b border-slate-800/70 bg-slate-950`}
-      >
+      <header className="fixed top-0 left-0 right-0 z-[9999] w-full border-b border-slate-800/70 bg-slate-950/95 md:bg-slate-950/80 md:backdrop-blur-xl">
         <div className="section-container flex h-16 items-center justify-between md:h-20">
           <motion.button
             initial={{ opacity: 0, x: -20 }}
@@ -295,7 +280,9 @@ export function Shell() {
             className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-700 bg-slate-900/70 text-slate-200 transition-colors hover:border-sky-500/70 md:hidden"
             onClick={() => {
               const menu = document.getElementById("mobile-menu");
-              if (menu) menu.classList.toggle("hidden");
+              if (menu) {
+                menu.classList.toggle("hidden");
+              }
             }}
             aria-label="Toggle navigation"
           >
@@ -305,10 +292,9 @@ export function Shell() {
 
         <div
           id="mobile-menu"
-          className={`${
-            isIOSRef.current ? "absolute" : "fixed"
-          } inset-x-0 top-16 z-[9999] hidden border-t border-slate-800/70 bg-slate-950 md:hidden`}
+          className="fixed inset-x-0 top-16 z-[9999] hidden border-t border-slate-800/70 bg-slate-950/95 md:backdrop-blur-xl md:hidden"
         >
+
           <div className="section-container flex flex-col gap-2 py-4">
             {navItems.map((item) => (
               <button
