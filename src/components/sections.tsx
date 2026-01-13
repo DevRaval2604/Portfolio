@@ -206,7 +206,7 @@ export function Shell() {
         className="fixed inset-x-0 top-0 z-50 h-[2px] origin-left bg-gradient-to-r from-sky-400 via-fuchsia-500 to-emerald-400"
         style={{ scaleX: scrollProgress }}
       />
-      <header className="fixed top-0 left-0 right-0 w-full z-40 border-b border-slate-800/70 bg-slate-950/80 backdrop-blur-xl">
+      <header className="sticky top-0 md:fixed md:left-0 md:right-0 w-full z-40 border-b border-slate-800/70 bg-slate-950/80 backdrop-blur-xl">
         <div className="section-container flex h-16 items-center justify-between md:h-20">
           <motion.button
             initial={{ opacity: 0, x: -20 }}
