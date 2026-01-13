@@ -191,6 +191,8 @@ function AnimatedCounter({ target, suffix = "", className = "" }: { target: numb
   return <span className={className}>{count}{suffix}</span>;
 }
 
+import { useRef } from "react";
+
 export function Shell() {
   const { scrollYProgress } = useScroll();
   const scrollProgress = useSpring(scrollYProgress, {
@@ -199,26 +201,34 @@ export function Shell() {
     restDelta: 0.001
   });
 
-  const [iosTop, setIosTop] = useState(0);
-  const [isIOS, setIsIOS] = useState(false);
+  const headerRef = useRef<HTMLDivElement | null>(null);
+  const tickingRef = useRef(false);
+  const isIOSRef = useRef(false);
 
   useEffect(() => {
-    const ios =
+    const isIOS =
       typeof window !== "undefined" &&
       /iPad|iPhone|iPod/.test(navigator.userAgent);
 
-    setIsIOS(ios);
+    isIOSRef.current = isIOS;
+    if (!isIOS) return;
 
-    if (!ios) return;
+    const handleScroll = () => {
+      if (tickingRef.current) return;
+      tickingRef.current = true;
 
-    const onScroll = () => {
-      setIosTop(window.scrollY);
+      requestAnimationFrame(() => {
+        if (headerRef.current) {
+          headerRef.current.style.transform = `translateY(${window.scrollY}px)`;
+        }
+        tickingRef.current = false;
+      });
     };
 
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
 
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
@@ -229,10 +239,12 @@ export function Shell() {
       />
 
       <header
-        style={isIOS ? { top: iosTop } : undefined}
+        ref={headerRef}
         className={`${
-          isIOS ? "absolute" : "fixed"
-        } left-0 right-0 z-[9999] w-full border-b border-slate-800/70 bg-slate-950`}
+          isIOSRef.current
+            ? "absolute will-change-transform"
+            : "fixed"
+        } top-0 left-0 right-0 z-[9999] w-full border-b border-slate-800/70 bg-slate-950`}
       >
         <div className="section-container flex h-16 items-center justify-between md:h-20">
           <motion.button
@@ -294,7 +306,7 @@ export function Shell() {
         <div
           id="mobile-menu"
           className={`${
-            isIOS ? "absolute" : "fixed"
+            isIOSRef.current ? "absolute" : "fixed"
           } inset-x-0 top-16 z-[9999] hidden border-t border-slate-800/70 bg-slate-950 md:hidden`}
         >
           <div className="section-container flex flex-col gap-2 py-4">
