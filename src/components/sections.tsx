@@ -268,7 +268,7 @@ export function Shell() {
 
         <div
           id="mobile-menu"
-          className="fixed inset-x-0 top-16 z-[9999] transform-none hidden border-t border-slate-800/70 bg-slate-950/95 backdrop-blur-xl md:hidden"
+          className="sticky inset-x-0 top-16 z-[9999] transform-none hidden border-t border-slate-800/70 bg-slate-950/95 backdrop-blur-xl md:hidden"
         >
           <div className="section-container flex flex-col gap-2 py-4">
             {navItems.map((item) => (
