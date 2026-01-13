@@ -200,13 +200,13 @@ export function Shell() {
   });
 
   return (
-    <div className="relative min-h-screen bg-gradient-hero">
-      <FloatingParticles />
+    <>
       <motion.div
-        className="fixed inset-x-0 top-0 z-50 h-[2px] origin-left bg-gradient-to-r from-sky-400 via-fuchsia-500 to-emerald-400"
+        className="fixed inset-x-0 top-0 z-[9998] h-[2px] origin-left bg-gradient-to-r from-sky-400 via-fuchsia-500 to-emerald-400"
         style={{ scaleX: scrollProgress }}
       />
-      <header className="sticky top-0 md:fixed md:left-0 md:right-0 w-full z-40 border-b border-slate-800/70 bg-slate-950/80 backdrop-blur-xl">
+
+      <header className="fixed top-0 left-0 right-0 z-[9999] w-full border-b border-slate-800/70 bg-slate-950/80 backdrop-blur-xl">
         <div className="section-container flex h-16 items-center justify-between md:h-20">
           <motion.button
             initial={{ opacity: 0, x: -20 }}
@@ -268,7 +268,7 @@ export function Shell() {
 
         <div
           id="mobile-menu"
-          className="fixed inset-x-0 top-16 z-50 hidden border-t border-slate-800/70 bg-slate-950/95 backdrop-blur-xl md:hidden"
+          className="fixed inset-x-0 top-16 z-[9999] hidden border-t border-slate-800/70 bg-slate-950/95 backdrop-blur-xl md:hidden"
         >
           <div className="section-container flex flex-col gap-2 py-4">
             {navItems.map((item) => (
@@ -277,7 +277,7 @@ export function Shell() {
                 onClick={() => {
                   const menu = document.getElementById("mobile-menu");
                   if (menu) menu.classList.add("hidden");
-                  scrollToId(item.id, 100); // Small delay to let menu close
+                  scrollToId(item.id, 100);
                 }}
                 className="w-full rounded-xl px-4 py-3 text-left text-sm text-slate-100 transition-colors hover:bg-slate-900/80"
               >
@@ -288,7 +288,7 @@ export function Shell() {
               onClick={() => {
                 const menu = document.getElementById("mobile-menu");
                 if (menu) menu.classList.add("hidden");
-                scrollToId("contact", 100); // Small delay to let menu close
+                scrollToId("contact", 100);
               }}
               className="mt-3 rounded-xl bg-sky-500 px-4 py-3 text-center text-sm font-semibold text-slate-950 shadow-glow-cyan hover:shadow-glow-purple"
             >
@@ -298,22 +298,26 @@ export function Shell() {
         </div>
       </header>
 
-      <main>
-        <HeroSection />
-        <AboutSection />
-        <SkillsSection />
-        <ExperienceSection />
-        <ProjectsSection />
-        <EducationSection />
-        <ContactSection />
-      </main>
+      <div className="relative min-h-screen bg-gradient-hero pt-16 md:pt-20">
+        <FloatingParticles />
 
-      <footer className="border-t border-slate-800/70 bg-slate-950 py-6">
-        <div className="section-container flex flex-col items-center justify-center gap-3 text-xs text-slate-500 md:flex-row">
-          <span>© 2026 Dev Raval. Built with passion and purpose.</span>
-        </div>
-      </footer>
-    </div>
+        <main>
+          <HeroSection />
+          <AboutSection />
+          <SkillsSection />
+          <ExperienceSection />
+          <ProjectsSection />
+          <EducationSection />
+          <ContactSection />
+        </main>
+
+        <footer className="border-t border-slate-800/70 bg-slate-950 py-6">
+          <div className="section-container flex flex-col items-center justify-center gap-3 text-xs text-slate-500 md:flex-row">
+            <span>© 2026 Dev Raval. Built with passion and purpose.</span>
+          </div>
+        </footer>
+      </div>
+    </>
   );
 }
 
