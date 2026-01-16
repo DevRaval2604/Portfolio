@@ -718,7 +718,8 @@ function SkillsSection() {
             "Android Studio",
             "VS Code",
             "Linux Terminal",
-            "Firebase Emulator"
+            "Firebase Emulator",
+            "Xcode"
           ]}
         />
         <SkillGroup
@@ -844,7 +845,7 @@ function ExperienceSection() {
               </div>
               <ul className="mt-3 space-y-2 text-sm text-slate-300">
                 <li>
-                  Built <span className="font-semibold">Samskara</span>, an
+                  Built Samskara, an
                   AI-powered cultural learning app using Flutter, Firebase, and
                   Gemini API.
                 </li>
