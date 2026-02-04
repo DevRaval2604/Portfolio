@@ -863,7 +863,7 @@ function ExperienceSection() {
                 </li>
               </ul>
               <div className="mt-4 flex flex-wrap gap-2 text-[11px]">
-                {["Flutter", "Firebase", "Gemini API", "Firestore", "Firebase Auth"].map(
+                {["VS Code", "Xcode", "Android Studio", "Flutter", "Firebase", "Gemini API", "Firestore", "Firebase Auth"].map(
                   (t) => (
                     <span
                       key={t}
@@ -905,7 +905,7 @@ function ProjectsSection() {
             "Curated Indian festivals calendar",
             "Stories of ancient rulers and traditions"
           ]}
-          tags={["Flutter", "Firebase", "Gemini API", "Firestore","Firebase Auth"]}
+          tags={["VS Code", "Xcode", "Android Studio", "Flutter", "Firebase", "Gemini API", "Firestore", "Firebase Auth"]}
           repoUrl="https://github.com/DevRaval2604/samskara"
         />
         <ProjectCard
@@ -919,7 +919,7 @@ function ProjectsSection() {
             "Real-time status tracking",
             "Admin dashboards for service delegation"
           ]}
-          tags={["Android Studio", "Java", "Firebase", "XML","Firebase Realtime Database","Firebase Auth"]}
+          tags={["Android Studio", "Java", "Firebase", "XML", "Firebase Realtime Database", "Firebase Auth"]}
           repoUrl="https://github.com/DevRaval2604/citizen-care"
         />
         <ProjectCard
@@ -933,7 +933,7 @@ function ProjectsSection() {
             "Google Sign-In with personalized sync",
             "Study analytics and progress tracking"
           ]}
-          tags={["Flutter", "Firebase", "Gemini API", "YouTube API","Firestore","Firebase Auth"]}
+          tags={["Android Studio", "Flutter", "Firebase", "Gemini API", "YouTube API", "Firestore", "Firebase Auth"]}
           repoUrl="https://github.com/DevRaval2604/acaassist"
         />
       </div>
