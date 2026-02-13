@@ -850,12 +850,13 @@ function ExperienceSection() {
                   Gemini API.
                 </li>
                 <li>
-                  Designed features including daily shlokas, curated Indian
-                  festivals list, and ancient rulers stories.
+                  Architected immersive features including Daily Wisdom with modern relevance, 
+                  curated Festival guides, and a factual "Stories of India" library covering 
+                  Great Rulers, Freedom Fighters, and Ancient Indian Science.
                 </li>
                 <li>
-                  Integrated Gemini API for &quot;Ask the Gita&quot; chat
-                  feature providing wisdom from Bhagavad Gita.
+                  Integrated Gemini API to power "Ask the Gita," a spiritual guidance interface 
+                  that translates Bhagavad Gita shlokas into actionable modern-day advice.
                 </li>
                 <li>
                   Utilized Firestore for content storage and Firebase Auth for
@@ -900,10 +901,10 @@ function ProjectsSection() {
           problem="Making ancient Indian wisdom accessible and engaging for modern users"
           description="A comprehensive Flutter app that brings Indian culture to life through AI-powered features, daily spiritual content, and interactive learning."
           features={[
-            "Daily shlokas with meanings and audio",
-            "'Ask the Gita' AI chat powered by Gemini",
-            "Curated Indian festivals calendar",
-            "Stories of ancient rulers and traditions"
+            "Daily Shlokas with philosophical deep-dives and modern-day relevance",
+            "'Ask the Gita' AI guidance interface for scripture-based problem solving",
+            "Curated Indian Festivals calendar with astronomical and cultural insights",
+            "Factual History of India: Stories of Rulers, Freedom Fighters, and Ancient Science"
           ]}
           tags={["VS Code", "Xcode", "Android Studio", "Flutter", "Firebase", "Gemini API", "Firestore", "Firebase Auth"]}
           repoUrl="https://github.com/DevRaval2604/samskara"
