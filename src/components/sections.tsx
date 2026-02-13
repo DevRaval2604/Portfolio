@@ -903,7 +903,7 @@ function ProjectsSection() {
           features={[
             "Daily Shlokas with philosophical deep-dives and modern-day relevance",
             "'Ask the Gita' AI guidance interface for scripture-based problem solving",
-            "Curated Indian Festivals calendar with astronomical and cultural insights",
+            "Curated guide to Indian Festivals with astronomical and cultural insights",
             "Factual History of India: Stories of Rulers, Freedom Fighters, and Ancient Science"
           ]}
           tags={["VS Code", "Xcode", "Android Studio", "Flutter", "Firebase", "Gemini API", "Firestore", "Firebase Auth"]}
