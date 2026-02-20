@@ -1,75 +1,83 @@
 "use client";
 
-import { motion, useScroll, useSpring, useAnimation } from "framer-motion";
+import { motion, useScroll, useSpring } from "framer-motion";
 import {
   FiGithub,
   FiMenu
 } from "react-icons/fi";
 import classNames from "classnames";
-import { useEffect, useState } from "react";
+import { useEffect, useState, ReactNode, createContext, useContext, useMemo, useRef } from "react";
+import { sections } from "./navigation";
 
-export function useIOSFixedFallback() {
-  const [top, setTop] = useState(0);
-
+function usePrefersReducedMotion() {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   useEffect(() => {
-    const isIOS =
-      typeof window !== "undefined" &&
-      /iPad|iPhone|iPod/.test(navigator.userAgent);
-
-    if (!isIOS) return;
-
-    const onScroll = () => {
-      setTop(window.scrollY);
+    if (typeof window === "undefined") return;
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReducedMotion(mediaQuery.matches);
+    const handleChange = () => {
+      setPrefersReducedMotion(mediaQuery.matches);
     };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-
-    return () => window.removeEventListener("scroll", onScroll);
+    mediaQuery.addEventListener("change", handleChange);
+    return () => {
+      mediaQuery.removeEventListener("change", handleChange);
+    };
   }, []);
-
-  return top;
+  return prefersReducedMotion;
 }
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState<boolean | undefined>(undefined);
 
-const scrollToId = (id: string, delay: number = 0) => {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    setIsMobile(mediaQuery.matches);
+    const handleChange = () => {
+      setIsMobile(mediaQuery.matches);
+    };
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+
+  return isMobile;
+}
+
+const MotionContext = createContext<{
+  prefersReducedMotion: boolean;
+  isMobile: boolean | undefined;
+  shouldAnimateHeavy: boolean;
+}>({
+  prefersReducedMotion: false,
+  isMobile: undefined,
+  shouldAnimateHeavy: true
+});
+MotionContext.displayName = "MotionContext";
+
+const scrollToId = (
+  id: string,
+  delay = 0,
+  prefersReducedMotion = false
+) => {
   if (typeof window === "undefined") return;
   const el = document.getElementById(id);
   if (!el) return;
-  
+
   const performScroll = () => {
-    // Dynamic header offset based on screen size
-    const isMobile = window.innerWidth < 768;
-    const headerOffset = isMobile ? 72 : 88; // Slightly more offset for better alignment
-    const elementPosition = el.getBoundingClientRect().top;
-    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-    
-    window.scrollTo({
-      top: offsetPosition,
-      behavior: "smooth"
+    el.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth"
     });
   };
-  
-  if (delay > 0) {
-    setTimeout(performScroll, delay);
-  } else {
-    performScroll();
-  }
+
+  return delay > 0 ? setTimeout(performScroll, delay) : performScroll();
 };
 
-const navItems = [
-  { id: "about", label: "About" },
-  { id: "skills", label: "Skills" },
-  { id: "experience", label: "Experience" },
-  { id: "projects", label: "Projects" },
-  { id: "education", label: "Education" }
-];
-
 // Typewriter Effect Component
-function TypewriterText({ text, speed = 50, className = "" }: { text: string; speed?: number; className?: string }) {
+function TypewriterText({ text, speed = 50, className = "", children }: { text: string; speed?: number; className?: string; children?: (displayedText: string) => ReactNode }) {
   const [displayedText, setDisplayedText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
+  const { prefersReducedMotion } = useContext(MotionContext);
 
   useEffect(() => {
     setDisplayedText("");
@@ -78,9 +86,15 @@ function TypewriterText({ text, speed = 50, className = "" }: { text: string; sp
   }, [text]);
 
   useEffect(() => {
+    if (prefersReducedMotion) {
+      setDisplayedText(text);
+      setIsComplete(true);
+      return;
+    }
+
     if (currentIndex < text.length && !isComplete) {
       const timeout = setTimeout(() => {
-        setDisplayedText((prev) => prev + text[currentIndex]);
+        setDisplayedText(text.slice(0, currentIndex + 1));
         setCurrentIndex((prev) => {
           if (prev + 1 >= text.length) {
             setIsComplete(true);
@@ -90,77 +104,119 @@ function TypewriterText({ text, speed = 50, className = "" }: { text: string; sp
       }, speed);
       return () => clearTimeout(timeout);
     }
-  }, [currentIndex, text, speed, isComplete]);
+  }, [currentIndex, text, speed, isComplete, prefersReducedMotion]);
+
+  const cursor = !isComplete && <span className="animate-pulse">|</span>;
+
+  const srText = (
+    <span className="sr-only" role="status" aria-live="polite">
+      {isComplete ? text : ""}
+    </span>
+  );
+
+  if (children) {
+    return (
+      <span>
+        <span aria-hidden="true">
+          {children(displayedText)}
+          {cursor}
+        </span>
+        {srText}
+      </span>
+    );
+  }
 
   return (
     <span className={className}>
-      {displayedText}
-      {!isComplete && <span className="animate-pulse">|</span>}
+      <span aria-hidden="true">
+        {displayedText}
+        {cursor}
+      </span>
+      {srText}
     </span>
   );
 }
 
 // Floating Particles Background
 function FloatingParticles() {
-  // Reduce particles on mobile for better performance
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
-  const particleCount = isMobile ? 6 : 12;
-  const particles = Array.from({ length: particleCount }, (_, i) => i);
-  const [dimensions, setDimensions] = useState({ width: 1920, height: 1080 });
+  const { prefersReducedMotion, isMobile } = useContext(MotionContext);
+  if (prefersReducedMotion || isMobile === undefined) {
+    return null;
+  }
+  
+  const [particles, setParticles] = useState<{
+    id: string;
+    x: number;
+    y: number;
+    duration: number;
+    movement: number;
+    delay: number;
+    deltaX: number;
+    deltaY: number;
+  }[]>([]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      setDimensions({ width: window.innerWidth, height: window.innerHeight });
-      const handleResize = () => {
-        setDimensions({ width: window.innerWidth, height: window.innerHeight });
-      };
-      window.addEventListener("resize", handleResize);
-      return () => window.removeEventListener("resize", handleResize);
-    }
-  }, []);
+    let frame: number;
+    const generateParticles = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const particleCount = isMobile ? 6 : 12;
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+
+        const newParticles = Array.from({ length: particleCount }).map(() => ({
+          id: (typeof crypto !== "undefined" && crypto.randomUUID) ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
+          x: Math.random() * width,
+          y: Math.random() * height,
+          duration: isMobile ? 25 + Math.random() * 15 : 15 + Math.random() * 10,
+          movement: isMobile ? 200 : 400,
+          delay: Math.random() * 5,
+          deltaX: (Math.random() * (isMobile ? 200 : 400)) - (isMobile ? 100 : 200),
+          deltaY: (Math.random() * (isMobile ? 200 : 400)) - (isMobile ? 100 : 200)
+        }));
+        setParticles(newParticles);
+      });
+    };
+    generateParticles();
+    window.addEventListener('resize', generateParticles);
+    return () => {
+      window.removeEventListener('resize', generateParticles);
+      cancelAnimationFrame(frame);
+    };
+  }, [isMobile]);
   
   return (
     <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
-      {particles.map((i) => {
-        const startX = Math.random() * dimensions.width;
-        const startY = Math.random() * dimensions.height;
-        // Simpler animation on mobile for better performance
-        const duration = isMobile ? 25 + Math.random() * 15 : 15 + Math.random() * 10;
-        const movement = isMobile ? 200 : 400;
-        
-        return (
-          <motion.div
-            key={i}
-            className="absolute h-1 w-1 rounded-full bg-sky-400/30"
-            initial={{
-              x: startX,
-              y: startY,
-              opacity: 0
-            }}
-            animate={{
-              y: [startY, startY + (Math.random() * movement - movement/2), startY],
-              x: [startX, startX + (Math.random() * movement - movement/2), startX],
-              opacity: [0, 0.6, 0],
-            }}
-            transition={{
-              duration: duration,
-              repeat: Infinity,
-              delay: Math.random() * 5,
-              ease: "linear"
-            }}
-          />
-        );
-      })}
+      {particles.map((p) => (
+        <motion.div
+          key={p.id}
+          style={{ willChange: "transform" }}
+          className="absolute h-1 w-1 rounded-full bg-sky-400/30"
+          initial={{ x: p.x, y: p.y, opacity: 0 }}
+          animate={{
+            x: [p.x, p.x + p.deltaX, p.x],
+            y: [p.y, p.y + p.deltaY, p.y],
+            opacity: [0, 0.6, 0],
+          }}
+          transition={{
+            duration: p.duration,
+            repeat: Infinity,
+            delay: p.delay,
+            ease: "linear"
+          }}
+        />
+      ))}
     </div>
   );
 }
 
 // Rotating Icon Component
-function RotatingIcon({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function RotatingIcon({ children, className = "" }: { children: ReactNode; className?: string }) {
+  const { shouldAnimateHeavy } = useContext(MotionContext);
   return (
     <motion.div
       className={className}
-      animate={{ rotate: 360 }}
+      animate={shouldAnimateHeavy ? { rotate: 360 } : {}}
       transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
     >
       {children}
@@ -169,14 +225,15 @@ function RotatingIcon({ children, className = "" }: { children: React.ReactNode;
 }
 
 // Breathing Animation Component
-function BreathingCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function BreathingCard({ children, className = "" }: { children: ReactNode; className?: string }) {
+  const { shouldAnimateHeavy } = useContext(MotionContext);
   return (
     <motion.div
       className={className}
-      animate={{
+      animate={shouldAnimateHeavy ? {
         scale: [1, 1.02, 1],
         opacity: [0.9, 1, 0.9]
-      }}
+      } : {}}
       transition={{
         duration: 4,
         repeat: Infinity,
@@ -191,8 +248,14 @@ function BreathingCard({ children, className = "" }: { children: React.ReactNode
 // Animated Counter Component
 function AnimatedCounter({ target, suffix = "", className = "" }: { target: number; suffix?: string; className?: string }) {
   const [count, setCount] = useState(0);
+  const { prefersReducedMotion } = useContext(MotionContext);
 
   useEffect(() => {
+    if (prefersReducedMotion) {
+      setCount(target);
+      return;
+    }
+
     const duration = 2000;
     const steps = 60;
     const increment = target / steps;
@@ -210,7 +273,7 @@ function AnimatedCounter({ target, suffix = "", className = "" }: { target: numb
     }, stepDuration);
 
     return () => clearInterval(timer);
-  }, [target]);
+  }, [target, prefersReducedMotion]);
 
   return <span className={className}>{count}{suffix}</span>;
 }
@@ -223,6 +286,18 @@ export function Shell() {
     restDelta: 0.001
   });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('hero');
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const isMobile = useIsMobile();
+  const shouldAnimateHeavy = !prefersReducedMotion && isMobile === false;
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const prevIsOpen = useRef(isMobileMenuOpen);
+
+  const motionValue = useMemo(
+    () => ({ prefersReducedMotion, isMobile, shouldAnimateHeavy }),
+    [prefersReducedMotion, isMobile, shouldAnimateHeavy]
+  );
 
   useEffect(() => {
     const handleResize = () => {
@@ -235,50 +310,143 @@ export function Shell() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsMobileMenuOpen(false);
+        menuButtonRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, []);
+
+  useEffect(() => {
+    document.body.classList.toggle("overflow-hidden", isMobileMenuOpen);
+
+    if (isMobileMenuOpen) {
+      const menu = mobileMenuRef.current;
+      if (!menu) return;
+
+      const focusables = menu.querySelectorAll('a[href], button:not([disabled])');
+      const first = focusables[0] as HTMLElement;
+      const last = focusables[focusables.length - 1] as HTMLElement;
+
+      if (first) {
+        setTimeout(() => first.focus(), 50);
+      }
+
+      const handleTab = (e: KeyboardEvent) => {
+        if (e.key === 'Tab') {
+          if (e.shiftKey) {
+            if (document.activeElement === first) {
+              e.preventDefault();
+              last.focus();
+            }
+          } else {
+            if (document.activeElement === last) {
+              e.preventDefault();
+              first.focus();
+            }
+          }
+        }
+      };
+
+      window.addEventListener('keydown', handleTab);
+      return () => window.removeEventListener('keydown', handleTab);
+    } else if (prevIsOpen.current) {
+      menuButtonRef.current?.focus();
+    }
+    prevIsOpen.current = isMobileMenuOpen;
+  }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    const allSections = ["hero", ...sections.map(i => i.id)];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const mostVisible = entries
+          .filter(e => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (mostVisible) {
+          setActiveSection(mostVisible.target.id);
+        }
+      },
+      { threshold: 0.5, rootMargin: "-20% 0px -60% 0px" }
+    );
+
+    allSections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <>
+    <MotionContext.Provider value={motionValue}>
       <motion.div
         className="fixed inset-x-0 top-0 z-[9998] h-[2px] origin-left bg-gradient-to-r from-sky-400 via-fuchsia-500 to-emerald-400"
         style={{ scaleX: scrollProgress }}
       />
 
       <header className="fixed top-0 left-0 right-0 z-[9999] w-full border-b border-slate-800/70 bg-slate-950/95 md:bg-slate-950/80 md:backdrop-blur-xl">
+        <a
+          href="#hero"
+          className="sr-only focus:not-sr-only focus:absolute focus:z-[99999] focus:top-4 focus:left-4 bg-sky-500 text-slate-950 px-4 py-2 rounded-lg"
+        >
+          Skip to content
+        </a>
         <div className="section-container flex h-16 items-center justify-between md:h-20">
           <motion.button
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
             className="flex items-center text-base font-semibold text-slate-100 transition-opacity hover:opacity-80"
-            onClick={() => scrollToId("hero")}
+            onClick={() => scrollToId("hero", 0, prefersReducedMotion)}
+            aria-label="Scroll to top"
           >
             <span className="bg-gradient-title bg-clip-text text-transparent">
               Dev Raval
             </span>
           </motion.button>
 
-          <nav className="hidden items-center gap-6 md:flex lg:gap-8">
-            {navItems.map((item, index) => (
-              <motion.button
+          <nav
+            aria-label="Main navigation"
+            className="hidden items-center gap-6 md:flex lg:gap-8"
+          >
+            {sections.map((item: { id: string; label: string }, index: number) => (
+              <motion.a
                 key={item.id}
+                href={`#${item.id}`}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                onClick={() => scrollToId(item.id)}
-                className="nav-link relative text-sm font-medium text-slate-300 transition-colors hover:text-white"
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToId(item.id, 0, prefersReducedMotion);
+                }}
+                aria-label={`Go to ${item.label} section`}
+                aria-current={activeSection === item.id ? "page" : undefined}
+                className={classNames(
+                  "nav-link relative text-sm font-medium transition-colors",
+                  activeSection === item.id ? "text-white" : "text-slate-300 hover:text-white"
+                )}
               >
                 {item.label}
                 <motion.span
-                  className="absolute bottom-0 left-0 h-0.5 w-0 bg-sky-400"
-                  whileHover={{ width: "100%" }}
+                  className="absolute bottom-0 left-0 h-0.5 w-full bg-sky-400"
+                  style={{ originX: 0 }}
+                  animate={{ scaleX: activeSection === item.id ? 1 : 0 }}
                   transition={{ duration: 0.3 }}
                 />
-              </motion.button>
+              </motion.a>
             ))}
             <motion.button
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: navItems.length * 0.1 }}
-              onClick={() => scrollToId("contact")}
+              transition={{ duration: 0.5, delay: sections.length * 0.1 }}
+              onClick={() => scrollToId("contact", 0, prefersReducedMotion)}
               className="ml-2 rounded-full bg-sky-500 px-5 py-2 text-xs font-semibold text-slate-950 shadow-glow-cyan transition-all hover:scale-105 hover:shadow-glow-purple"
             >
               Let&apos;s Talk
@@ -289,37 +457,51 @@ export function Shell() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
+            ref={menuButtonRef}
             className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-700 bg-slate-900/70 text-slate-200 transition-colors hover:border-sky-500/70 md:hidden"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle navigation"
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-menu"
           >
             <FiMenu size={18} />
           </motion.button>
         </div>
 
         <div
+          id="mobile-menu"
+          ref={mobileMenuRef}
           className={classNames(
             "fixed inset-x-0 top-16 z-[9999] border-t border-slate-800/70 bg-slate-950/95 md:backdrop-blur-xl md:hidden",
             { hidden: !isMobileMenuOpen }
           )}
         >
           <div className="section-container flex flex-col gap-2 py-4">
-            {navItems.map((item) => (
-              <button
+            {sections.map((item: { id: string; label: string }) => (
+              <a
                 key={item.id}
-                onClick={() => {
+                href={`#${item.id}`}
+                onClick={(e) => {
+                  e.preventDefault();
                   setIsMobileMenuOpen(false);
-                  scrollToId(item.id, 100);
+                  scrollToId(item.id, 100, prefersReducedMotion);
                 }}
-                className="w-full rounded-xl px-4 py-3 text-left text-sm text-slate-100 transition-colors hover:bg-slate-900/80"
+                aria-label={`Go to ${item.label} section`}
+                aria-current={activeSection === item.id ? "page" : undefined}
+                className={classNames(
+                  "w-full rounded-xl px-4 py-3 text-left text-sm transition-colors hover:bg-slate-900/80",
+                  activeSection === item.id
+                    ? "text-white bg-slate-800"
+                    : "text-slate-100"
+                )}
               >
                 {item.label}
-              </button>
+              </a>
             ))}
             <button
               onClick={() => {
                 setIsMobileMenuOpen(false);
-                scrollToId("contact", 100);
+                scrollToId("contact", 100, prefersReducedMotion);
               }}
               className="mt-3 rounded-xl bg-sky-500 px-4 py-3 text-center text-sm font-semibold text-slate-950 shadow-glow-cyan hover:shadow-glow-purple"
             >
@@ -329,7 +511,7 @@ export function Shell() {
         </div>
       </header>
 
-      <div className="relative min-h-screen bg-gradient-hero pt-16 md:pt-20">
+      <div className="relative min-h-[100svh] bg-gradient-hero pt-16 md:pt-20 overflow-x-hidden">
         <FloatingParticles />
 
         <main>
@@ -348,7 +530,7 @@ export function Shell() {
           </div>
         </footer>
       </div>
-    </>
+    </MotionContext.Provider>
   );
 }
 
@@ -384,19 +566,21 @@ const heroItem = {
 };
 
 function HeroSection() {
+  const { shouldAnimateHeavy, prefersReducedMotion } = useContext(MotionContext);
+
   return (
     <section
       id="hero"
-      className="section-padding section-container relative flex min-h-[80vh] items-center justify-center overflow-hidden md:min-h-[90vh]"
+      className="section-padding section-container relative flex min-h-[80svh] items-center justify-center overflow-hidden md:min-h-[90svh]"
     >
       <motion.div
         className="pointer-events-none absolute -left-20 top-[-80px] h-40 w-40 rounded-full bg-sky-500/40 blur-3xl md:-left-56 md:top-[-160px] md:h-80 md:w-80"
-        animate={{ x: [0, 12, -8, 0], opacity: [0.5, 0.9, 0.7, 0.5] }}
+        animate={shouldAnimateHeavy ? { x: [0, 12, -8, 0], opacity: [0.5, 0.9, 0.7, 0.5] } : {}}
         transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
       />
       <motion.div
         className="pointer-events-none absolute -right-16 bottom-[-60px] h-40 w-40 rounded-full bg-violet-500/35 blur-3xl md:-right-48 md:bottom-[-120px] md:h-80 md:w-80"
-        animate={{ x: [0, -9, 12, 0], opacity: [0.45, 0.85, 0.7, 0.45] }}
+        animate={shouldAnimateHeavy ? { x: [0, -9, 12, 0], opacity: [0.45, 0.85, 0.7, 0.45] } : {}}
         transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
       />
       <motion.div
@@ -411,20 +595,23 @@ function HeroSection() {
         </motion.p>
         <motion.h1
           variants={heroItem}
-          className="text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl"
+          className="text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl min-h-[80px] sm:min-h-[100px] md:min-h-[120px]"
         >
-          <TypewriterText 
-            text="Hi, I'm " 
-            speed={80}
-            className="text-white"
-          />
-          <span className="bg-gradient-title bg-clip-text text-transparent">
-            <TypewriterText 
-              text="Dev Raval" 
-              speed={100}
-              className="bg-gradient-title bg-clip-text text-transparent"
-            />
-          </span>
+          <TypewriterText text="Hi, I'm Dev Raval" speed={80}>
+            {(currentText) => {
+              const prefix = "Hi, I'm ";
+              const typedPrefix = currentText.slice(0, prefix.length);
+              const typedName = currentText.slice(prefix.length);
+              return (
+                <>
+                  {typedPrefix}
+                  <span className="bg-gradient-title bg-clip-text text-transparent">
+                    {typedName}
+                  </span>
+                </>
+              );
+            }}
+          </TypewriterText>
         </motion.h1>
         <motion.p
           variants={heroItem}
@@ -445,25 +632,25 @@ function HeroSection() {
           {/* View My Work Button */}
           <motion.button
             className="primary-btn"
-            onClick={() => scrollToId("projects")}
+            onClick={() => scrollToId("projects", 0, prefersReducedMotion)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            animate={{
+            animate={shouldAnimateHeavy ? {
               boxShadow: [
                 "0 0 20px rgba(56, 189, 248, 0.4)",
                 "0 0 40px rgba(56, 189, 248, 0.6)",
                 "0 0 20px rgba(56, 189, 248, 0.4)"
               ]
-            }}
-            transition={{
+            } : {}}
+            transition={shouldAnimateHeavy ? {
               boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-            }}
+            } : {}}
           >
             View My Work
             <motion.span 
               className="ml-2 text-base inline-block"
-              animate={{ y: [0, 4, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              animate={shouldAnimateHeavy ? { y: [0, 4, 0] } : {}}
+              transition={shouldAnimateHeavy ? { duration: 1.5, repeat: Infinity, ease: "easeInOut" } : {}}
             >
               ↓
             </motion.span>
@@ -473,25 +660,25 @@ function HeroSection() {
           <motion.button
             key="contact-btn"
             className="primary-btn" 
-            onClick={() => scrollToId("contact")}
+            onClick={() => scrollToId("contact", 0, prefersReducedMotion)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            animate={{
+            animate={shouldAnimateHeavy ? {
               boxShadow: [
                 "0 0 20px rgba(56, 189, 248, 0.4)",
                 "0 0 40px rgba(56, 189, 248, 0.6)",
                 "0 0 20px rgba(56, 189, 248, 0.4)"
               ]
-            }}
-            transition={{
+            } : {}}
+            transition={shouldAnimateHeavy ? {
               boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-            }}
+            } : {}}
           >
             Contact Me
             <motion.span 
               className="ml-2 text-base inline-block"
-              animate={{ y: [0, 4, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut"}}
+              animate={shouldAnimateHeavy ? { y: [0, 4, 0] } : {}}
+              transition={shouldAnimateHeavy ? { duration: 1.5, repeat: Infinity, ease: "easeInOut"} : {}}
             >
               ↓
             </motion.span>
@@ -503,15 +690,15 @@ function HeroSection() {
           className="mt-12 sm:mt-16 flex flex-col items-center gap-3 text-xs uppercase tracking-[0.3em] text-slate-500"
         >
           <motion.span
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            animate={shouldAnimateHeavy ? { opacity: [0.5, 1, 0.5] } : {}}
+            transition={shouldAnimateHeavy ? { duration: 2, repeat: Infinity, ease: "easeInOut" } : {}}
           >
             Scroll
           </motion.span>
           <motion.span 
             className="text-lg"
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            animate={shouldAnimateHeavy ? { y: [0, 8, 0] } : {}}
+            transition={shouldAnimateHeavy ? { duration: 1.5, repeat: Infinity, ease: "easeInOut" } : {}}
           >
             ↓
           </motion.span>
@@ -530,7 +717,12 @@ function SectionHeader({
   title: string;
   accentWord?: string;
 }) {
-  const [first, second] = accentWord ? title.split(" ") : [title, ""];
+  const words = title.split(" ");
+  const [first, second] = accentWord 
+    ? [words.slice(0, -1).join(" "), words.slice(-1).join(" ")]
+    : [title, ""];
+  const { shouldAnimateHeavy } = useContext(MotionContext);
+
   return (
     <motion.div 
       className="mb-12 text-center"
@@ -541,8 +733,8 @@ function SectionHeader({
     >
       <motion.p 
         className="pill mx-auto mb-3"
-        animate={{ opacity: [0.7, 1, 0.7] }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        animate={shouldAnimateHeavy ? { opacity: [0.7, 1, 0.7] } : {}}
+        transition={shouldAnimateHeavy ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : {}}
       >
         {eyebrow}
       </motion.p>
@@ -552,14 +744,14 @@ function SectionHeader({
             {first}{" "}
             <motion.span 
               className="bg-gradient-title bg-clip-text text-transparent"
-              animate={{
+              animate={shouldAnimateHeavy ? {
                 backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
-              }}
-              transition={{
+              } : {}}
+              transition={shouldAnimateHeavy ? {
                 duration: 5,
                 repeat: Infinity,
                 ease: "linear"
-              }}
+              } : {}}
               style={{
                 backgroundSize: "200% 200%"
               }}
@@ -576,6 +768,8 @@ function SectionHeader({
 }
 
 function AboutSection() {
+  const { shouldAnimateHeavy } = useContext(MotionContext);
+
   return (
     <section id="about" className="section-padding section-container">
       <SectionHeader
@@ -592,40 +786,40 @@ function AboutSection() {
           custom={0}
           className="glass-card relative overflow-hidden p-6 sm:p-8"
           whileHover={{ scale: 1.02 }}
-          animate={{
+          animate={shouldAnimateHeavy ? {
             boxShadow: [
               "0 0 20px rgba(56, 189, 248, 0.3)",
               "0 0 40px rgba(56, 189, 248, 0.5)",
               "0 0 20px rgba(56, 189, 248, 0.3)"
             ]
-          }}
-          transition={{
+          } : {}}
+          transition={shouldAnimateHeavy ? {
             boxShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" }
-          }}
+          } : {}}
         >
           <motion.div 
             className="absolute inset-0 rounded-3xl bg-gradient-hero opacity-60"
-            animate={{
+            animate={shouldAnimateHeavy ? {
               backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
-            }}
-            transition={{
+            } : {}}
+            transition={shouldAnimateHeavy ? {
               duration: 8,
               repeat: Infinity,
               ease: "linear"
-            }}
+            } : {}}
           />
           <div className="relative z-10 flex flex-col items-center gap-4 text-center">
             <motion.div 
               className="inline-flex h-32 w-32 items-center justify-center rounded-full bg-gradient-title shadow-glow-cyan"
-              animate={{
+              animate={shouldAnimateHeavy ? {
                 scale: [1, 1.05, 1],
                 rotate: [0, 5, -5, 0]
-              }}
-              transition={{
+              } : {}}
+              transition={shouldAnimateHeavy ? {
                 duration: 4,
                 repeat: Infinity,
                 ease: "easeInOut"
-              }}
+              } : {}}
             >
               <span className="text-3xl font-semibold text-slate-950">DR</span>
             </motion.div>
@@ -640,8 +834,8 @@ function AboutSection() {
               <motion.div 
                 className="rounded-2xl bg-slate-900/80 px-5 py-3"
                 whileHover={{ scale: 1.1, y: -5, boxShadow: "0 0 20px rgba(56, 189, 248, 0.3)" }}
-                animate={{ y: [0, -4, 0] }}
-                transition={{ y: { duration: 2, repeat: Infinity, ease: "easeInOut" } }}
+                animate={shouldAnimateHeavy ? { y: [0, -4, 0] } : {}}
+                transition={shouldAnimateHeavy ? { y: { duration: 2, repeat: Infinity, ease: "easeInOut" } } : {}}
               >
                 <AnimatedCounter target={3} suffix="+" className="text-lg font-semibold text-white" />
                 <div className="mt-1 text-[11px] uppercase tracking-[0.18em] text-slate-400">
@@ -651,8 +845,8 @@ function AboutSection() {
               <motion.div 
                 className="rounded-2xl bg-slate-900/80 px-5 py-3"
                 whileHover={{ scale: 1.1, y: -5, boxShadow: "0 0 20px rgba(56, 189, 248, 0.3)" }}
-                animate={{ y: [0, -4, 0] }}
-                transition={{ y: { duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.5 } }}
+                animate={shouldAnimateHeavy ? { y: [0, -4, 0] } : {}}
+                transition={shouldAnimateHeavy ? { y: { duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.5 } } : {}}
               >
                 <AnimatedCounter target={1} className="text-lg font-semibold text-white" />
                 <div className="mt-1 text-[11px] uppercase tracking-[0.18em] text-slate-400">
@@ -757,21 +951,19 @@ function SkillGroup({
   items: string[];
   highlight?: boolean;
 }) {
+  const { shouldAnimateHeavy } = useContext(MotionContext);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{
-        whileInView: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
-        animate: {
-          y: { duration: 3, repeat: Infinity, ease: "easeInOut" }
-        }
-      }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       whileHover={{ y: -8, scale: 1.02 }}
-      animate={{
-        y: [0, -6, 0]
-      }}
+      animate={shouldAnimateHeavy ? {
+        y: [0, -6, 0],
+        transition: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+      } : {}}
       className={classNames(
         "glass-card interactive-card flex flex-col gap-4 p-6",
         highlight && "shadow-glow-cyan"
@@ -786,20 +978,18 @@ function SkillGroup({
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            transition={{
-              whileInView: { delay: index * 0.05, duration: 0.3 },
-              animate: {
-                boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut", delay: index * 0.1 }
-              }
-            }}
+            transition={{ delay: index * 0.05, duration: 0.3 }}
             whileHover={{ scale: 1.1, y: -2 }}
-            animate={{
+            animate={shouldAnimateHeavy ? {
               boxShadow: [
                 "0 0 0px rgba(56, 189, 248, 0)",
                 "0 0 8px rgba(56, 189, 248, 0.3)",
                 "0 0 0px rgba(56, 189, 248, 0)"
-              ]
-            }}
+              ],
+              transition: {
+                boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut", delay: index * 0.1 }
+              }
+            } : {}}
           >
             {item}
           </motion.span>
@@ -967,27 +1157,27 @@ function ProjectCard({
   featured?: boolean;
   repoUrl: string;
 }) {
+  const { shouldAnimateHeavy } = useContext(MotionContext);
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{
-        whileInView: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
-        animate: {
-          y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
-          boxShadow: featured ? { duration: 3, repeat: Infinity, ease: "easeInOut" } : undefined
-        }
-      }}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       whileHover={{ y: -10, scale: 1.01 }}
-      animate={{
+      animate={shouldAnimateHeavy ? {
         y: [0, -5, 0],
         boxShadow: featured ? [
           "0 0 20px rgba(56, 189, 248, 0.3)",
           "0 0 50px rgba(56, 189, 248, 0.6)",
           "0 0 20px rgba(56, 189, 248, 0.3)"
-        ] : undefined
-      }}
+        ] : undefined,
+        transition: {
+          y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+          boxShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+        }
+      } : {}}
       className={classNames(
         "glass-card interactive-card grid gap-6 sm:gap-8 border border-slate-800/80 bg-slate-950/70 p-5 sm:p-7 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1.1fr)]",
         featured && "shadow-glow-cyan"
@@ -1002,19 +1192,19 @@ function ProjectCard({
           {featured && (
             <motion.span 
               className="self-start rounded-full bg-sky-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-sky-400"
-              animate={{
+              animate={shouldAnimateHeavy ? {
                 scale: [1, 1.1, 1],
                 boxShadow: [
                   "0 0 10px rgba(56, 189, 248, 0.3)",
                   "0 0 20px rgba(56, 189, 248, 0.6)",
                   "0 0 10px rgba(56, 189, 248, 0.3)"
                 ]
-              }}
-              transition={{
+              } : {}}
+              transition={shouldAnimateHeavy ? {
                 duration: 2,
                 repeat: Infinity,
                 ease: "easeInOut"
-              }}
+              } : {}}
             >
               ⭐ Featured
             </motion.span>
@@ -1042,13 +1232,15 @@ function ProjectCard({
             </motion.span>
           ))}
         </div>
-        <button 
-          onClick={() => window.open(repoUrl, '_blank')}
+        <a 
+          href={repoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
           className="primary-btn mt-4 inline-flex items-center gap-2"
         >
           <FiGithub className="h-4 w-4" />
           View Code
-        </button>
+        </a>
       </div>
 
       <div className="space-y-3">
@@ -1164,32 +1356,52 @@ function ContactSection() {
 }
 
 function ContactCard({ label, value }: { label: string; value: string }) {
-  const handleClick = () => {
-    if (label === 'Email') {
-      window.open(`mailto:${value}`);
-    } else if (label === 'GitHub') {
-      window.open(`https://github.com/${value}`, '_blank');
-    } else if (label === 'LinkedIn') {
-      window.open(`https://linkedin.com/in/${value}`, '_blank');
-    }
-  };
+  let href: string | undefined;
+  if (label === 'Email') {
+    href = `mailto:${value}`;
+  } else if (label === 'GitHub') {
+    href = `https://github.com/${value}`;
+  } else if (label === 'LinkedIn') {
+    href = `https://linkedin.com/in/${value}`;
+  }
 
-  const isClickable = label !== 'Location';
+  const isClickable = !!href;
+  const className = `glass-card interactive-card flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between border border-slate-800/80 bg-slate-950/70 p-5 sm:px-5 sm:py-4 ${
+    isClickable ? 'cursor-pointer' : ''
+  }`;
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      whileHover={{ y: -4, scale: 1.01 }}
-      onClick={isClickable ? handleClick : undefined}
-      className={`glass-card interactive-card flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between border border-slate-800/80 bg-slate-950/70 p-5 sm:px-5 sm:py-4 ${
-        isClickable ? 'cursor-pointer' : ''
-      }`}
-    >
+  const content = (
+    <>
       <span className="text-xs font-medium text-slate-400 min-w-fit">{label}</span>
       <span className="text-sm font-medium text-slate-100 break-all sm:break-normal sm:text-right">{value}</span>
+    </>
+  );
+
+  const animationProps = {
+    initial: { opacity: 0, y: 16 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true },
+    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+    whileHover: { y: -4, scale: 1.01 }
+  };
+
+  if (href) {
+    return (
+      <motion.a
+        href={href}
+        target={label === 'Email' ? undefined : "_blank"}
+        rel={label === 'Email' ? undefined : "noopener noreferrer"}
+        className={className}
+        {...animationProps}
+      >
+        {content}
+      </motion.a>
+    );
+  }
+
+  return (
+    <motion.div className={className} {...animationProps}>
+      {content}
     </motion.div>
   );
 }
