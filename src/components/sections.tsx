@@ -222,6 +222,18 @@ export function Shell() {
     damping: 30,
     restDelta: 0.001
   });
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) { // Tailwind's 'md' breakpoint
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <>
@@ -278,12 +290,7 @@ export function Shell() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
             className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-700 bg-slate-900/70 text-slate-200 transition-colors hover:border-sky-500/70 md:hidden"
-            onClick={() => {
-              const menu = document.getElementById("mobile-menu");
-              if (menu) {
-                menu.classList.toggle("hidden");
-              }
-            }}
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle navigation"
           >
             <FiMenu size={18} />
@@ -291,17 +298,17 @@ export function Shell() {
         </div>
 
         <div
-          id="mobile-menu"
-          className="fixed inset-x-0 top-16 z-[9999] hidden border-t border-slate-800/70 bg-slate-950/95 md:backdrop-blur-xl md:hidden"
+          className={classNames(
+            "fixed inset-x-0 top-16 z-[9999] border-t border-slate-800/70 bg-slate-950/95 md:backdrop-blur-xl md:hidden",
+            { hidden: !isMobileMenuOpen }
+          )}
         >
-
           <div className="section-container flex flex-col gap-2 py-4">
             {navItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => {
-                  const menu = document.getElementById("mobile-menu");
-                  if (menu) menu.classList.add("hidden");
+                  setIsMobileMenuOpen(false);
                   scrollToId(item.id, 100);
                 }}
                 className="w-full rounded-xl px-4 py-3 text-left text-sm text-slate-100 transition-colors hover:bg-slate-900/80"
@@ -311,8 +318,7 @@ export function Shell() {
             ))}
             <button
               onClick={() => {
-                const menu = document.getElementById("mobile-menu");
-                if (menu) menu.classList.add("hidden");
+                setIsMobileMenuOpen(false);
                 scrollToId("contact", 100);
               }}
               className="mt-3 rounded-xl bg-sky-500 px-4 py-3 text-center text-sm font-semibold text-slate-950 shadow-glow-cyan hover:shadow-glow-purple"
@@ -494,7 +500,7 @@ function HeroSection() {
 
         <motion.div
           variants={heroItem}
-          className="mt-16 flex flex-col items-center gap-3 text-xs uppercase tracking-[0.3em] text-slate-500"
+          className="mt-12 sm:mt-16 flex flex-col items-center gap-3 text-xs uppercase tracking-[0.3em] text-slate-500"
         >
           <motion.span
             animate={{ opacity: [0.5, 1, 0.5] }}
@@ -577,14 +583,14 @@ function AboutSection() {
         title="Crafting Digital Experiences"
         accentWord="Experiences"
       />
-      <div className="grid gap-8 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1.6fr)]">
+      <div className="grid gap-6 md:gap-8 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1.6fr)]">
         <motion.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           variants={fadeUp}
           custom={0}
-          className="glass-card relative overflow-hidden p-8"
+          className="glass-card relative overflow-hidden p-6 sm:p-8"
           whileHover={{ scale: 1.02 }}
           animate={{
             boxShadow: [
@@ -630,7 +636,7 @@ function AboutSection() {
               </p>
               <p className="text-xs text-slate-500">Ahmedabad, Gujarat</p>
             </div>
-            <div className="mt-4 flex gap-4 text-center">
+            <div className="mt-4 flex flex-wrap justify-center gap-4 text-center">
               <motion.div 
                 className="rounded-2xl bg-slate-900/80 px-5 py-3"
                 whileHover={{ scale: 1.1, y: -5, boxShadow: "0 0 20px rgba(56, 189, 248, 0.3)" }}
@@ -824,7 +830,7 @@ function ExperienceSection() {
             variants={fadeUp}
             custom={0}
             whileHover={{ y: -8, scale: 1.01 }}
-            className="glass-card interactive-card relative mt-4 ml-auto mr-auto border border-sky-500/40 bg-slate-950/70 p-7 shadow-glow-cyan"
+            className="glass-card interactive-card relative mt-4 ml-auto mr-auto border border-sky-500/40 bg-slate-950/70 p-5 sm:p-7 shadow-glow-cyan"
           >
             <div className="absolute left-1/2 -top-[11px] flex h-6 w-6 -translate-x-1/2 items-center justify-center rounded-full border border-sky-400 bg-slate-950">
               <span className="h-2.5 w-2.5 rounded-full bg-sky-400" />
@@ -983,19 +989,19 @@ function ProjectCard({
         ] : undefined
       }}
       className={classNames(
-        "glass-card interactive-card grid gap-8 border border-slate-800/80 bg-slate-950/70 p-7 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1.1fr)]",
+        "glass-card interactive-card grid gap-6 sm:gap-8 border border-slate-800/80 bg-slate-950/70 p-5 sm:p-7 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1.1fr)]",
         featured && "shadow-glow-cyan"
       )}
     >
       <div className="space-y-4">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div>
             <h3 className="text-lg font-semibold text-white">{name}</h3>
             <p className="mt-1 text-sm font-medium text-sky-400">{subtitle}</p>
           </div>
           {featured && (
             <motion.span 
-              className="rounded-full bg-sky-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-sky-400"
+              className="self-start rounded-full bg-sky-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-sky-400"
               animate={{
                 scale: [1, 1.1, 1],
                 boxShadow: [
@@ -1052,7 +1058,7 @@ function ProjectCard({
         <ol className="space-y-3 text-sm text-slate-300">
           {features.map((feature, index) => (
             <li key={feature} className="flex gap-3">
-              <span className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-sky-500/15 text-xs font-semibold text-sky-400">
+              <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-sky-500/15 text-xs font-semibold text-sky-400">
                 {index + 1}
               </span>
               <span>{feature}</span>
@@ -1075,7 +1081,7 @@ function EducationSection() {
         title="Education"
         accentWord="Education"
       />
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid gap-6 md:gap-8 md:grid-cols-2">
         <EducationCard
           degree="MSc - Information Technology"
           institution="Dhirubhai Ambani University"
@@ -1111,7 +1117,7 @@ function EducationCard({
       viewport={{ once: true }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       whileHover={{ y: -6, scale: 1.01 }}
-      className="glass-card interactive-card flex flex-col gap-3 border border-slate-800/80 bg-slate-950/70 p-7"
+      className="glass-card interactive-card flex flex-col gap-3 border border-slate-800/80 bg-slate-950/70 p-5 sm:p-7"
     >
       <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-500 text-slate-950 shadow-glow-cyan">
         🎓
@@ -1178,15 +1184,12 @@ function ContactCard({ label, value }: { label: string; value: string }) {
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       whileHover={{ y: -4, scale: 1.01 }}
       onClick={isClickable ? handleClick : undefined}
-      className={`glass-card interactive-card flex items-center justify-between border border-slate-800/80 bg-slate-950/70 px-5 py-4 ${
+      className={`glass-card interactive-card flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between border border-slate-800/80 bg-slate-950/70 p-5 sm:px-5 sm:py-4 ${
         isClickable ? 'cursor-pointer' : ''
       }`}
     >
-      <div>
-        <p className="text-xs font-medium text-slate-400">{label}</p>
-        <p className="mt-1 text-sm font-medium text-slate-100">{value}</p>
-      </div>
+      <span className="text-xs font-medium text-slate-400 min-w-fit">{label}</span>
+      <span className="text-sm font-medium text-slate-100 break-all sm:break-normal sm:text-right">{value}</span>
     </motion.div>
   );
 }
-
