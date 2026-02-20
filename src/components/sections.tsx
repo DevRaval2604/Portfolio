@@ -8,40 +8,22 @@ import {
 import classNames from "classnames";
 import { useEffect, useState, ReactNode, createContext, useContext, useMemo, useRef } from "react";
 import { sections } from "./navigation";
-
-function usePrefersReducedMotion() {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReducedMotion(mediaQuery.matches);
-    const handleChange = () => {
-      setPrefersReducedMotion(mediaQuery.matches);
-    };
-    mediaQuery.addEventListener("change", handleChange);
-    return () => {
-      mediaQuery.removeEventListener("change", handleChange);
-    };
-  }, []);
-  return prefersReducedMotion;
-}
-
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState<boolean | undefined>(undefined);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const mediaQuery = window.matchMedia("(max-width: 767px)");
-    setIsMobile(mediaQuery.matches);
-    const handleChange = () => {
-      setIsMobile(mediaQuery.matches);
-    };
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, []);
-
-  return isMobile;
-}
+import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
+import { useIsMobile } from "./useIsMobile";
+import { useActiveSection } from "./useActiveSection";
+import { useFocusTrap } from "./useFocusTrap";
+import { useScrollLock } from "./useScrollLock";
+import {
+  ProjectCardProps,
+  ContactCardProps,
+  EducationCardProps,
+  SkillGroupProps,
+  SectionHeaderProps,
+  TypewriterTextProps,
+  RotatingIconProps,
+  BreathingCardProps,
+  AnimatedCounterProps
+} from "./portfolio";
 
 const MotionContext = createContext<{
   prefersReducedMotion: boolean;
@@ -73,7 +55,7 @@ const scrollToId = (
 };
 
 // Typewriter Effect Component
-function TypewriterText({ text, speed = 50, className = "", children }: { text: string; speed?: number; className?: string; children?: (displayedText: string) => ReactNode }) {
+function TypewriterText({ text, speed = 50, className = "", children }: TypewriterTextProps) {
   const [displayedText, setDisplayedText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
@@ -211,7 +193,7 @@ function FloatingParticles() {
 }
 
 // Rotating Icon Component
-function RotatingIcon({ children, className = "" }: { children: ReactNode; className?: string }) {
+function RotatingIcon({ children, className = "" }: RotatingIconProps) {
   const { shouldAnimateHeavy } = useContext(MotionContext);
   return (
     <motion.div
@@ -225,7 +207,7 @@ function RotatingIcon({ children, className = "" }: { children: ReactNode; class
 }
 
 // Breathing Animation Component
-function BreathingCard({ children, className = "" }: { children: ReactNode; className?: string }) {
+function BreathingCard({ children, className = "" }: BreathingCardProps) {
   const { shouldAnimateHeavy } = useContext(MotionContext);
   return (
     <motion.div
@@ -246,7 +228,7 @@ function BreathingCard({ children, className = "" }: { children: ReactNode; clas
 }
 
 // Animated Counter Component
-function AnimatedCounter({ target, suffix = "", className = "" }: { target: number; suffix?: string; className?: string }) {
+function AnimatedCounter({ target, suffix = "", className = "" }: AnimatedCounterProps) {
   const [count, setCount] = useState(0);
   const { prefersReducedMotion } = useContext(MotionContext);
 
@@ -286,13 +268,13 @@ export function Shell() {
     restDelta: 0.001
   });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('hero');
   const prefersReducedMotion = usePrefersReducedMotion();
   const isMobile = useIsMobile();
   const shouldAnimateHeavy = !prefersReducedMotion && isMobile === false;
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const prevIsOpen = useRef(isMobileMenuOpen);
+  const sectionIds = useMemo(() => ["hero", ...sections.map(s => s.id)], []);
+  const activeSection = useActiveSection(sectionIds);
 
   const motionValue = useMemo(
     () => ({ prefersReducedMotion, isMobile, shouldAnimateHeavy }),
@@ -310,78 +292,13 @@ export function Shell() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setIsMobileMenuOpen(false);
-        menuButtonRef.current?.focus();
-      }
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, []);
-
-  useEffect(() => {
-    document.body.classList.toggle("overflow-hidden", isMobileMenuOpen);
-
-    if (isMobileMenuOpen) {
-      const menu = mobileMenuRef.current;
-      if (!menu) return;
-
-      const focusables = menu.querySelectorAll('a[href], button:not([disabled])');
-      const first = focusables[0] as HTMLElement;
-      const last = focusables[focusables.length - 1] as HTMLElement;
-
-      if (first) {
-        setTimeout(() => first.focus(), 50);
-      }
-
-      const handleTab = (e: KeyboardEvent) => {
-        if (e.key === 'Tab') {
-          if (e.shiftKey) {
-            if (document.activeElement === first) {
-              e.preventDefault();
-              last.focus();
-            }
-          } else {
-            if (document.activeElement === last) {
-              e.preventDefault();
-              first.focus();
-            }
-          }
-        }
-      };
-
-      window.addEventListener('keydown', handleTab);
-      return () => window.removeEventListener('keydown', handleTab);
-    } else if (prevIsOpen.current) {
-      menuButtonRef.current?.focus();
-    }
-    prevIsOpen.current = isMobileMenuOpen;
-  }, [isMobileMenuOpen]);
-
-  useEffect(() => {
-    const allSections = ["hero", ...sections.map(i => i.id)];
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const mostVisible = entries
-          .filter(e => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-
-        if (mostVisible) {
-          setActiveSection(mostVisible.target.id);
-        }
-      },
-      { threshold: 0.5, rootMargin: "-20% 0px -60% 0px" }
-    );
-
-    allSections.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-
-    return () => observer.disconnect();
-  }, []);
+  useScrollLock(isMobileMenuOpen);
+  useFocusTrap(
+    isMobileMenuOpen,
+    mobileMenuRef,
+    menuButtonRef,
+    () => setIsMobileMenuOpen(false)
+  );
 
   return (
     <MotionContext.Provider value={motionValue}>
@@ -598,7 +515,7 @@ function HeroSection() {
           className="text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl min-h-[80px] sm:min-h-[100px] md:min-h-[120px]"
         >
           <TypewriterText text="Hi, I'm Dev Raval" speed={80}>
-            {(currentText) => {
+            {(currentText: string) => {
               const prefix = "Hi, I'm ";
               const typedPrefix = currentText.slice(0, prefix.length);
               const typedName = currentText.slice(prefix.length);
@@ -712,11 +629,7 @@ function SectionHeader({
   eyebrow,
   title,
   accentWord
-}: {
-  eyebrow: string;
-  title: string;
-  accentWord?: string;
-}) {
+}: SectionHeaderProps) {
   const words = title.split(" ");
   const [first, second] = accentWord 
     ? [words.slice(0, -1).join(" "), words.slice(-1).join(" ")]
@@ -946,11 +859,7 @@ function SkillGroup({
   title,
   items,
   highlight
-}: {
-  title: string;
-  items: string[];
-  highlight?: boolean;
-}) {
+}: SkillGroupProps) {
   const { shouldAnimateHeavy } = useContext(MotionContext);
 
   return (
@@ -971,7 +880,7 @@ function SkillGroup({
     >
       <h3 className="text-sm font-semibold text-slate-100">{title}</h3>
       <div className="flex flex-wrap gap-2">
-        {items.map((item, index) => (
+        {items.map((item: string, index: number) => (
           <motion.span 
             key={item} 
             className="badge-pill"
@@ -1147,16 +1056,7 @@ function ProjectCard({
   tags,
   featured,
   repoUrl
-}: {
-  name: string;
-  subtitle: string;
-  problem: string;
-  description: string;
-  features: string[];
-  tags: string[];
-  featured?: boolean;
-  repoUrl: string;
-}) {
+}: ProjectCardProps) {
   const { shouldAnimateHeavy } = useContext(MotionContext);
 
   return (
@@ -1218,7 +1118,7 @@ function ProjectCard({
         </div>
         <p className="text-sm leading-relaxed text-slate-300">{description}</p>
         <div className="flex flex-wrap gap-2 text-[11px]">
-          {tags.map((tag, index) => (
+          {tags.map((tag: string, index: number) => (
             <motion.span
               key={tag}
               className="rounded-full bg-slate-900/80 px-3 py-1 text-slate-200"
@@ -1248,7 +1148,7 @@ function ProjectCard({
           Key Features
         </p>
         <ol className="space-y-3 text-sm text-slate-300">
-          {features.map((feature, index) => (
+          {features.map((feature: string, index: number) => (
             <li key={feature} className="flex gap-3">
               <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-sky-500/15 text-xs font-semibold text-sky-400">
                 {index + 1}
@@ -1296,12 +1196,7 @@ function EducationCard({
   institution,
   location,
   duration
-}: {
-  degree: string;
-  institution: string;
-  location: string;
-  duration: string;
-}) {
+}: EducationCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -1355,7 +1250,7 @@ function ContactSection() {
   );
 }
 
-function ContactCard({ label, value }: { label: string; value: string }) {
+function ContactCard({ label, value }: ContactCardProps) {
   let href: string | undefined;
   if (label === 'Email') {
     href = `mailto:${value}`;
