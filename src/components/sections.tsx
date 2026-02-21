@@ -308,7 +308,11 @@ export function Shell() {
       */}
       <style>
         {`
-          a, button { -webkit-tap-highlight-color: transparent; }
+          /* This removes the default gray/green/blue highlight box on mobile tap */
+          a, button, [role="button"] { 
+            -webkit-tap-highlight-color: transparent !important; 
+            outline: none !important;
+          }
         `}
       </style>
       <motion.div
@@ -409,7 +413,7 @@ export function Shell() {
                 aria-label={`Go to ${item.label} section`}
                 aria-current={activeSection === item.id ? "page" : undefined}
                 className={classNames(
-                  "w-full rounded-xl px-4 py-3 text-left text-sm transition-colors hover:bg-slate-900/80 text-slate-100 focus:outline-none focus:ring-0 active:outline-none"
+                  "w-full rounded-xl px-4 py-3 text-left text-sm transition-colors hover:bg-slate-900/80 text-slate-100 focus:outline-none focus:ring-0 active:bg-transparent"
                 )}
               >
                 {item.label}
