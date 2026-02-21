@@ -270,7 +270,7 @@ export function Shell() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const prefersReducedMotion = usePrefersReducedMotion();
   const isMobile = useIsMobile();
-  const shouldAnimateHeavy = !prefersReducedMotion && isMobile === false;
+  const shouldAnimateHeavy = !prefersReducedMotion;
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const sectionIds = useMemo(() => ["hero", ...sections.map(s => s.id)], []);
@@ -351,12 +351,6 @@ export function Shell() {
                 )}
               >
                 {item.label}
-                <motion.span
-                  className="absolute bottom-0 left-0 h-0.5 w-full bg-sky-400"
-                  style={{ originX: 0 }}
-                  animate={{ scaleX: activeSection === item.id ? 1 : 0 }}
-                  transition={{ duration: 0.3 }}
-                />
               </motion.a>
             ))}
             <motion.button
@@ -408,7 +402,7 @@ export function Shell() {
                 className={classNames(
                   "w-full rounded-xl px-4 py-3 text-left text-sm transition-colors hover:bg-slate-900/80",
                   activeSection === item.id
-                    ? "text-white bg-slate-800"
+                    ? "text-white"
                     : "text-slate-100"
                 )}
               >
