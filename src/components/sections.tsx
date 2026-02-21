@@ -369,6 +369,7 @@ export function Shell() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
             ref={menuButtonRef}
+            style={{ WebkitTapHighlightColor: "transparent" }}
             className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-700 bg-slate-900/70 text-slate-200 transition-colors hover:border-sky-500/70 focus:outline-none md:hidden"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle navigation"
@@ -399,8 +400,9 @@ export function Shell() {
                 }}
                 aria-label={`Go to ${item.label} section`}
                 aria-current={activeSection === item.id ? "page" : undefined}
+                style={{ WebkitTapHighlightColor: "transparent" }}
                 className={classNames(
-                  "w-full rounded-xl px-4 py-3 text-left text-sm transition-colors hover:bg-slate-900/80 text-slate-100 focus:outline-none"
+                  "w-full rounded-xl px-4 py-3 text-left text-sm transition-colors hover:bg-slate-900/80 text-slate-100 focus:outline-none focus:ring-0 active:outline-none"
                 )}
               >
                 {item.label}
@@ -411,7 +413,8 @@ export function Shell() {
                 setIsMobileMenuOpen(false);
                 scrollToId("contact", 100, prefersReducedMotion);
               }}
-              className="mt-3 rounded-xl bg-sky-500 px-4 py-3 text-center text-sm font-semibold text-slate-950 shadow-glow-cyan hover:shadow-glow-purple"
+              style={{ WebkitTapHighlightColor: "transparent" }}
+              className="mt-3 rounded-xl bg-sky-500 px-4 py-3 text-center text-sm font-semibold text-slate-950 shadow-glow-cyan hover:shadow-glow-purple focus:outline-none focus:ring-0 active:outline-none"
             >
               Let&apos;s Talk
             </button>
@@ -738,8 +741,16 @@ function AboutSection() {
               <motion.div 
                 className="rounded-2xl bg-slate-900/80 px-5 py-3"
                 whileHover={{ scale: 1.1, y: -5, boxShadow: "0 0 20px rgba(56, 189, 248, 0.3)" }}
-                animate={shouldAnimateHeavy ? { y: [0, -4, 0] } : {}}
-                transition={shouldAnimateHeavy ? { y: { duration: 2, repeat: Infinity, ease: "easeInOut" } } : {}}
+                animate={shouldAnimateHeavy ? {
+                  boxShadow: [
+                    "0 0 0px rgba(56, 189, 248, 0)",
+                    "0 0 8px rgba(56, 189, 248, 0.3)",
+                    "0 0 0px rgba(56, 189, 248, 0)"
+                  ]
+                } : {}}
+                transition={shouldAnimateHeavy ? {
+                  boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                } : {}}
               >
                 <AnimatedCounter target={3} suffix="+" className="text-lg font-semibold text-white" />
                 <div className="mt-1 text-[11px] uppercase tracking-[0.18em] text-slate-400">
@@ -749,8 +760,16 @@ function AboutSection() {
               <motion.div 
                 className="rounded-2xl bg-slate-900/80 px-5 py-3"
                 whileHover={{ scale: 1.1, y: -5, boxShadow: "0 0 20px rgba(56, 189, 248, 0.3)" }}
-                animate={shouldAnimateHeavy ? { y: [0, -4, 0] } : {}}
-                transition={shouldAnimateHeavy ? { y: { duration: 2, repeat: Infinity, ease: "easeInOut", delay: 0.5 } } : {}}
+                animate={shouldAnimateHeavy ? {
+                  boxShadow: [
+                    "0 0 0px rgba(56, 189, 248, 0)",
+                    "0 0 8px rgba(56, 189, 248, 0.3)",
+                    "0 0 0px rgba(56, 189, 248, 0)"
+                  ]
+                } : {}}
+                transition={shouldAnimateHeavy ? {
+                  boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                } : {}}
               >
                 <AnimatedCounter target={1} className="text-lg font-semibold text-white" />
                 <div className="mt-1 text-[11px] uppercase tracking-[0.18em] text-slate-400">
@@ -887,7 +906,7 @@ function SkillGroup({
                 "0 0 0px rgba(56, 189, 248, 0)"
               ],
               transition: {
-                boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut", delay: index * 0.1 }
+                boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
               }
             } : {}}
           >
@@ -974,7 +993,7 @@ function ExperienceSection() {
                           "0 0 0px rgba(56, 189, 248, 0)"
                         ],
                         transition: {
-                          boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut", delay: index * 0.1 }
+                          boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
                         }
                       } : {}}
                     >
@@ -1137,7 +1156,7 @@ function ProjectCard({
                   "0 0 0px rgba(56, 189, 248, 0)"
                 ],
                 transition: {
-                  boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut", delay: index * 0.1 }
+                  boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
                 }
               } : {}}
             >
