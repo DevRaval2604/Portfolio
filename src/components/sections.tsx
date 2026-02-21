@@ -302,6 +302,15 @@ export function Shell() {
 
   return (
     <MotionContext.Provider value={motionValue}>
+      {/*
+        Globally disable the tap highlight color on WebKit browsers (iOS Safari)
+        to prevent the green/blue box from appearing on interactive elements.
+      */}
+      <style>
+        {`
+          a, button { -webkit-tap-highlight-color: transparent; }
+        `}
+      </style>
       <motion.div
         className="fixed inset-x-0 top-0 z-[9998] h-[2px] origin-left bg-gradient-to-r from-sky-400 via-fuchsia-500 to-emerald-400"
         style={{ scaleX: scrollProgress }}
@@ -369,7 +378,6 @@ export function Shell() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
             ref={menuButtonRef}
-            style={{ WebkitTapHighlightColor: "transparent" }}
             className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-700 bg-slate-900/70 text-slate-200 transition-colors hover:border-sky-500/70 focus:outline-none md:hidden"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle navigation"
@@ -400,7 +408,6 @@ export function Shell() {
                 }}
                 aria-label={`Go to ${item.label} section`}
                 aria-current={activeSection === item.id ? "page" : undefined}
-                style={{ WebkitTapHighlightColor: "transparent" }}
                 className={classNames(
                   "w-full rounded-xl px-4 py-3 text-left text-sm transition-colors hover:bg-slate-900/80 text-slate-100 focus:outline-none focus:ring-0 active:outline-none"
                 )}
@@ -413,7 +420,6 @@ export function Shell() {
                 setIsMobileMenuOpen(false);
                 scrollToId("contact", 100, prefersReducedMotion);
               }}
-              style={{ WebkitTapHighlightColor: "transparent" }}
               className="mt-3 rounded-xl bg-sky-500 px-4 py-3 text-center text-sm font-semibold text-slate-950 shadow-glow-cyan hover:shadow-glow-purple focus:outline-none focus:ring-0 active:outline-none"
             >
               Let&apos;s Talk
@@ -743,13 +749,13 @@ function AboutSection() {
                 whileHover={{ scale: 1.1, y: -5, boxShadow: "0 0 20px rgba(56, 189, 248, 0.3)" }}
                 animate={shouldAnimateHeavy ? {
                   boxShadow: [
-                    "0 0 0px rgba(56, 189, 248, 0)",
-                    "0 0 8px rgba(56, 189, 248, 0.3)",
-                    "0 0 0px rgba(56, 189, 248, 0)"
+                    "0 0 20px rgba(56, 189, 248, 0.3)",
+                    "0 0 40px rgba(56, 189, 248, 0.5)",
+                    "0 0 20px rgba(56, 189, 248, 0.3)"
                   ]
                 } : {}}
                 transition={shouldAnimateHeavy ? {
-                  boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                  boxShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" }
                 } : {}}
               >
                 <AnimatedCounter target={3} suffix="+" className="text-lg font-semibold text-white" />
@@ -762,13 +768,13 @@ function AboutSection() {
                 whileHover={{ scale: 1.1, y: -5, boxShadow: "0 0 20px rgba(56, 189, 248, 0.3)" }}
                 animate={shouldAnimateHeavy ? {
                   boxShadow: [
-                    "0 0 0px rgba(56, 189, 248, 0)",
-                    "0 0 8px rgba(56, 189, 248, 0.3)",
-                    "0 0 0px rgba(56, 189, 248, 0)"
+                    "0 0 20px rgba(56, 189, 248, 0.3)",
+                    "0 0 40px rgba(56, 189, 248, 0.5)",
+                    "0 0 20px rgba(56, 189, 248, 0.3)"
                   ]
                 } : {}}
                 transition={shouldAnimateHeavy ? {
-                  boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                  boxShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" }
                 } : {}}
               >
                 <AnimatedCounter target={1} className="text-lg font-semibold text-white" />
