@@ -916,7 +916,7 @@ function SkillGroup({
                 "0 0 0px rgba(56, 189, 248, 0)"
               ],
               transition: {
-                boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                boxShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" }
               }
             } : {}}
           >
@@ -1003,7 +1003,7 @@ function ExperienceSection() {
                           "0 0 0px rgba(56, 189, 248, 0)"
                         ],
                         transition: {
-                          boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                          boxShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" }
                         }
                       } : {}}
                     >
@@ -1166,7 +1166,7 @@ function ProjectCard({
                   "0 0 0px rgba(56, 189, 248, 0)"
                 ],
                 transition: {
-                  boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                  boxShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" }
                 }
               } : {}}
             >
