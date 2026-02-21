@@ -368,8 +368,20 @@ export function Shell() {
             ))}
             <motion.button
               initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: sections.length * 0.1 }}
+              animate={shouldAnimateHeavy ? {
+                opacity: 1,
+                scale: 1,
+                boxShadow: [
+                  "0 0 20px rgba(56, 189, 248, 0.4)",
+                  "0 0 40px rgba(56, 189, 248, 0.6)",
+                  "0 0 20px rgba(56, 189, 248, 0.4)"
+                ]
+              } : { opacity: 1, scale: 1 }}
+              transition={{
+                ...(shouldAnimateHeavy && { boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" } }),
+                duration: 0.5,
+                delay: sections.length * 0.1,
+              }}
               onClick={() => scrollToId("contact", 0, prefersReducedMotion)}
               className="ml-2 rounded-full bg-sky-500 px-5 py-2 text-xs font-semibold text-slate-950 shadow-glow-cyan transition-all hover:scale-105 hover:shadow-glow-purple"
             >
@@ -419,15 +431,25 @@ export function Shell() {
                 {item.label}
               </a>
             ))}
-            <button
+            <motion.button
               onClick={() => {
                 setIsMobileMenuOpen(false);
                 scrollToId("contact", 100, prefersReducedMotion);
               }}
               className="mt-3 rounded-xl bg-sky-500 px-4 py-3 text-center text-sm font-semibold text-slate-950 shadow-glow-cyan hover:shadow-glow-purple focus:outline-none focus:ring-0 active:outline-none"
+              animate={shouldAnimateHeavy ? {
+                boxShadow: [
+                  "0 0 20px rgba(56, 189, 248, 0.4)",
+                  "0 0 40px rgba(56, 189, 248, 0.6)",
+                  "0 0 20px rgba(56, 189, 248, 0.4)"
+                ]
+              } : {}}
+              transition={shouldAnimateHeavy ? {
+                boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+              } : {}}
             >
               Let&apos;s Talk
-            </button>
+            </motion.button>
           </div>
         </div>
       </header>
