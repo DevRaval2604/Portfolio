@@ -400,10 +400,7 @@ export function Shell() {
                 aria-label={`Go to ${item.label} section`}
                 aria-current={activeSection === item.id ? "page" : undefined}
                 className={classNames(
-                  "w-full rounded-xl px-4 py-3 text-left text-sm transition-colors hover:bg-slate-900/80",
-                  activeSection === item.id
-                    ? "text-white"
-                    : "text-slate-100"
+                  "w-full rounded-xl px-4 py-3 text-left text-sm transition-colors hover:bg-slate-900/80 text-slate-100 focus:outline-none"
                 )}
               >
                 {item.label}
