@@ -1056,6 +1056,7 @@ function ProjectsSection() {
       <div className="space-y-6">
         <ProjectCard
           name="Samskara"
+          featured
           subtitle="AI-Powered Cultural Learning App"
           problem="Making ancient Indian wisdom accessible and engaging for modern users"
           description="A comprehensive Flutter app that brings Indian culture to life through AI-powered features, daily spiritual content, and interactive learning."
@@ -1070,6 +1071,7 @@ function ProjectsSection() {
         />
         <ProjectCard
           name="Citizen Care"
+          featured
           subtitle="Civic Issue Reporting Platform"
           problem="Streamlining communication between citizens and local authorities for faster issue resolution"
           description="An Android app enabling citizens to report civic issues with GPS location and image support, featuring role-based workflows for efficient problem resolution."
@@ -1084,6 +1086,7 @@ function ProjectsSection() {
         />
         <ProjectCard
           name="AcaAssist"
+          featured
           subtitle="AI Academic Assistant"
           problem="Helping students manage assignments and create personalized study schedules efficiently"
           description="An intelligent academic companion that uses AI to recommend study topics, manage tasks, and provide voice-assisted interactions for hands-free productivity."
@@ -1143,26 +1146,6 @@ function ProjectCard({
             <h3 className="text-lg font-semibold text-white">{name}</h3>
             <p className="mt-1 text-sm font-medium text-sky-400">{subtitle}</p>
           </div>
-          {featured && (
-            <motion.span 
-              className="self-start rounded-full bg-sky-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-sky-400"
-              animate={shouldAnimateHeavy ? {
-                scale: [1, 1.1, 1],
-                boxShadow: [
-                  "0 0 10px rgba(56, 189, 248, 0.3)",
-                  "0 0 20px rgba(56, 189, 248, 0.6)",
-                  "0 0 10px rgba(56, 189, 248, 0.3)"
-                ]
-              } : {}}
-              transition={shouldAnimateHeavy ? {
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut"
-              } : {}}
-            >
-              ⭐ Featured
-            </motion.span>
-          )}
         </div>
         <div className="rounded-2xl border border-slate-800/80 bg-slate-900/60 p-4 text-sm">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
@@ -1196,15 +1179,27 @@ function ProjectCard({
             </motion.span>
           ))}
         </div>
-        <a 
+        <motion.a 
           href={repoUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="primary-btn mt-4 inline-flex items-center gap-2"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          animate={shouldAnimateHeavy ? {
+            boxShadow: [
+              "0 0 20px rgba(56, 189, 248, 0.4)",
+              "0 0 40px rgba(56, 189, 248, 0.6)",
+              "0 0 20px rgba(56, 189, 248, 0.4)"
+            ]
+          } : {}}
+          transition={shouldAnimateHeavy ? {
+            boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+          } : {}}
         >
           <FiGithub className="h-4 w-4" />
           View Code
-        </a>
+        </motion.a>
       </div>
 
       <div className="space-y-3">
