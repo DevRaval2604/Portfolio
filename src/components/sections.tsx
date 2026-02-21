@@ -369,7 +369,7 @@ export function Shell() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
             ref={menuButtonRef}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-700 bg-slate-900/70 text-slate-200 transition-colors hover:border-sky-500/70 md:hidden"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-700 bg-slate-900/70 text-slate-200 transition-colors hover:border-sky-500/70 focus:outline-none md:hidden"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle navigation"
             aria-expanded={isMobileMenuOpen}
@@ -900,6 +900,8 @@ function SkillGroup({
 }
 
 function ExperienceSection() {
+  const { shouldAnimateHeavy } = useContext(MotionContext);
+
   return (
     <section
       id="experience"
@@ -961,13 +963,23 @@ function ExperienceSection() {
               </ul>
               <div className="mt-4 flex flex-wrap gap-2 text-[11px]">
                 {["VS Code", "Xcode", "Android Studio", "Flutter", "Firebase", "Gemini API", "Firestore", "Firebase Auth"].map(
-                  (t) => (
-                    <span
+                  (t, index) => (
+                    <motion.span
                       key={t}
                       className="rounded-full bg-slate-900/80 px-3 py-1 text-slate-200"
+                      animate={shouldAnimateHeavy ? {
+                        boxShadow: [
+                          "0 0 0px rgba(56, 189, 248, 0)",
+                          "0 0 8px rgba(56, 189, 248, 0.3)",
+                          "0 0 0px rgba(56, 189, 248, 0)"
+                        ],
+                        transition: {
+                          boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut", delay: index * 0.1 }
+                        }
+                      } : {}}
                     >
                       {t}
-                    </span>
+                    </motion.span>
                   )
                 )}
               </div>
@@ -1118,6 +1130,16 @@ function ProjectCard({
               viewport={{ once: true }}
               transition={{ delay: index * 0.1, duration: 0.3 }}
               whileHover={{ scale: 1.15, y: -3, backgroundColor: "rgba(56, 189, 248, 0.2)" }}
+              animate={shouldAnimateHeavy ? {
+                boxShadow: [
+                  "0 0 0px rgba(56, 189, 248, 0)",
+                  "0 0 8px rgba(56, 189, 248, 0.3)",
+                  "0 0 0px rgba(56, 189, 248, 0)"
+                ],
+                transition: {
+                  boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut", delay: index * 0.1 }
+                }
+              } : {}}
             >
               {tag}
             </motion.span>
