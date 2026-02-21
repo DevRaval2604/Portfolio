@@ -733,7 +733,7 @@ function AboutSection() {
             ]
           } : {}}
           transition={shouldAnimateHeavy ? {
-            boxShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+            boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
           } : {}}
         >
           <motion.div 
@@ -781,7 +781,7 @@ function AboutSection() {
                   ]
                 } : {}}
                 transition={shouldAnimateHeavy ? {
-                  boxShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+                  boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
                 } : {}}
               >
                 <AnimatedCounter target={3} suffix="+" className="text-lg font-semibold text-white" />
@@ -800,7 +800,7 @@ function AboutSection() {
                   ]
                 } : {}}
                 transition={shouldAnimateHeavy ? {
-                  boxShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+                  boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
                 } : {}}
               >
                 <AnimatedCounter target={1} className="text-lg font-semibold text-white" />
@@ -938,7 +938,7 @@ function SkillGroup({
                 "0 0 0px rgba(56, 189, 248, 0)"
               ],
               transition: {
-                boxShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+                boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
               }
             } : {}}
           >
@@ -1025,7 +1025,7 @@ function ExperienceSection() {
                           "0 0 0px rgba(56, 189, 248, 0)"
                         ],
                         transition: {
-                          boxShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+                          boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
                         }
                       } : {}}
                     >
@@ -1164,7 +1164,7 @@ function ProjectCard({
                   "0 0 0px rgba(56, 189, 248, 0)"
                 ],
                 transition: {
-                  boxShadow: { duration: 3, repeat: Infinity, ease: "easeInOut" }
+                  boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
                 }
               } : {}}
             >
