@@ -1116,23 +1116,18 @@ function ProjectCard({
   const { shouldAnimateHeavy } = useContext(MotionContext);
 
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      whileHover={{ y: -10, scale: 1.01 }}
-      whileTap={{ scale: 0.98, boxShadow: "0 0 30px rgba(56, 189, 248, 0.5)" }}
-      animate={shouldAnimateHeavy ? {
-        y: [0, -5, 0],
-        transition: {
-          y: { duration: 4, repeat: Infinity, ease: "easeInOut" }
-        }
-      } : {}}
-      className={classNames(
-        "glass-card interactive-card grid gap-6 sm:gap-8 border border-slate-800/80 bg-slate-950/70 p-5 sm:p-7 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1.1fr)]"
-      )}
-    >
+      <motion.article
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        whileHover={{ y: -10, scale: 1.01 }}
+        whileTap={{
+          scale: 0.98,
+          boxShadow: "0 0 30px rgba(56, 189, 248, 0.6)"
+        }}
+        className="glass-card interactive-card grid gap-6 sm:gap-8 border border-slate-800/80 bg-slate-950/70 p-5 sm:p-7 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1.1fr)]"
+      >
       <div className="space-y-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div>
