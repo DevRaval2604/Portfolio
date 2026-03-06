@@ -286,9 +286,14 @@ export function Shell() {
     restDelta: 0.001
   });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const prefersReducedMotion = usePrefersReducedMotion();
   const isMobile = useIsMobile();
-  const shouldAnimateHeavy = !prefersReducedMotion;
+  const shouldAnimateHeavy = mounted && !prefersReducedMotion;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const sectionIds = useMemo(() => ["hero", ...sections.map(s => s.id)], []);
