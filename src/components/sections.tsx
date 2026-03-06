@@ -36,6 +36,18 @@ const MotionContext = createContext<{
 });
 MotionContext.displayName = "MotionContext";
 
+// ─── Shared glow animation (replaces repeated inline boxShadow) ───────────
+const glowAnimate = {
+  boxShadow: [
+    "0 0 20px rgba(56, 189, 248, 0.4)",
+    "0 0 40px rgba(56, 189, 248, 0.6)",
+    "0 0 20px rgba(56, 189, 248, 0.4)"
+  ]
+};
+const glowTransition = {
+  boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" as const }
+};
+
 const scrollToId = (
   id: string,
   delay = 0,
@@ -122,53 +134,59 @@ function TypewriterText({ text, speed = 50, className = "", children }: Typewrit
 // Floating Particles Background
 function FloatingParticles() {
   const { prefersReducedMotion, isMobile } = useContext(MotionContext);
-  if (prefersReducedMotion || isMobile === undefined) {
-    return null;
-  }
-  
+
   const [particles, setParticles] = useState<{
     id: string;
     x: number;
     y: number;
     duration: number;
-    movement: number;
     delay: number;
     deltaX: number;
     deltaY: number;
   }[]>([]);
 
   useEffect(() => {
+    if (prefersReducedMotion || isMobile === undefined) return;
+
     let frame: number;
     const generateParticles = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
         const particleCount = isMobile ? 6 : 12;
-        const width = window.innerWidth;
-        const height = window.innerHeight;
+        // Cap particle spread to viewport max 1400px for ultrawide screens
+        const width = Math.min(window.innerWidth, 1400);
+        const height = Math.min(window.innerHeight, 900);
+        const movement = isMobile ? 150 : 300;
 
         const newParticles = Array.from({ length: particleCount }).map(() => ({
-          id: (typeof crypto !== "undefined" && crypto.randomUUID) ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
-          x: Math.random() * width,
-          y: Math.random() * height,
+          id: (typeof crypto !== "undefined" && crypto.randomUUID)
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random()}`,
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
           duration: isMobile ? 25 + Math.random() * 15 : 15 + Math.random() * 10,
-          movement: isMobile ? 200 : 400,
           delay: Math.random() * 5,
-          deltaX: (Math.random() * (isMobile ? 200 : 400)) - (isMobile ? 100 : 200),
-          deltaY: (Math.random() * (isMobile ? 200 : 400)) - (isMobile ? 100 : 200)
+          deltaX: Math.random() * movement - movement / 2,
+          deltaY: Math.random() * movement - movement / 2,
         }));
         setParticles(newParticles);
       });
     };
+
     generateParticles();
-    window.addEventListener('resize', generateParticles);
+    window.addEventListener("resize", generateParticles);
     return () => {
-      window.removeEventListener('resize', generateParticles);
+      window.removeEventListener("resize", generateParticles);
       cancelAnimationFrame(frame);
     };
-  }, [isMobile]);
-  
+  }, [isMobile, prefersReducedMotion]);
+
+  if (prefersReducedMotion || isMobile === undefined || particles.length === 0) {
+    return null;
+  }
+
   return (
-    <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
+    <div className="pointer-events-none fixed inset-0 overflow-hidden z-0" aria-hidden="true">
       {particles.map((p) => (
         <motion.div
           key={p.id}
@@ -184,7 +202,7 @@ function FloatingParticles() {
             duration: p.duration,
             repeat: Infinity,
             delay: p.delay,
-            ease: "linear"
+            ease: "linear",
           }}
         />
       ))}
@@ -302,19 +320,6 @@ export function Shell() {
 
   return (
     <MotionContext.Provider value={motionValue}>
-      {/*
-        Globally disable the tap highlight color on WebKit browsers (iOS Safari)
-        to prevent the green/blue box from appearing on interactive elements.
-      */}
-      <style>
-        {`
-          /* This removes the default gray/green/blue highlight box on mobile tap */
-          a, button, [role="button"] { 
-            -webkit-tap-highlight-color: transparent !important; 
-            outline: none !important;
-          }
-        `}
-      </style>
       <motion.div
         className="fixed inset-x-0 top-0 z-[9998] h-[2px] origin-left bg-gradient-to-r from-sky-400 via-fuchsia-500 to-emerald-400"
         style={{ scaleX: scrollProgress }}
@@ -368,17 +373,9 @@ export function Shell() {
             ))}
             <motion.button
               initial={{ opacity: 0, scale: 0.9 }}
-              animate={shouldAnimateHeavy ? {
-                opacity: 1,
-                scale: 1,
-                boxShadow: [
-                  "0 0 20px rgba(56, 189, 248, 0.4)",
-                  "0 0 40px rgba(56, 189, 248, 0.6)",
-                  "0 0 20px rgba(56, 189, 248, 0.4)"
-                ]
-              } : { opacity: 1, scale: 1 }}
+              animate={shouldAnimateHeavy ? { opacity: 1, scale: 1, ...glowAnimate } : { opacity: 1, scale: 1 }}
               transition={{
-                ...(shouldAnimateHeavy && { boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" } }),
+                ...(shouldAnimateHeavy && glowTransition),
                 duration: 0.5,
                 delay: sections.length * 0.1,
               }}
@@ -437,16 +434,8 @@ export function Shell() {
                 scrollToId("contact", 100, prefersReducedMotion);
               }}
               className="mt-3 rounded-xl bg-sky-500 px-4 py-3 text-center text-sm font-semibold text-slate-950 shadow-glow-cyan hover:shadow-glow-purple focus:outline-none focus:ring-0 active:outline-none"
-              animate={shouldAnimateHeavy ? {
-                boxShadow: [
-                  "0 0 20px rgba(56, 189, 248, 0.4)",
-                  "0 0 40px rgba(56, 189, 248, 0.6)",
-                  "0 0 20px rgba(56, 189, 248, 0.4)"
-                ]
-              } : {}}
-              transition={shouldAnimateHeavy ? {
-                boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-              } : {}}
+              animate={shouldAnimateHeavy ? glowAnimate : {}}
+              transition={shouldAnimateHeavy ? glowTransition : {}}
             >
               Let&apos;s Talk
             </motion.button>
@@ -514,7 +503,7 @@ function HeroSection() {
   return (
     <section
       id="hero"
-      className="section-padding section-container relative flex min-h-[80svh] items-center justify-center overflow-hidden md:min-h-[90svh]"
+      className="section-padding section-container relative flex min-h-[85svh] items-center justify-center overflow-hidden landscape:min-h-[100svh] md:landscape:min-h-[90svh]"
     >
       <motion.div
         className="pointer-events-none absolute -left-20 top-[-80px] h-40 w-40 rounded-full bg-sky-500/40 blur-3xl md:-left-56 md:top-[-160px] md:h-80 md:w-80"
@@ -538,7 +527,7 @@ function HeroSection() {
         </motion.p>
         <motion.h1
           variants={heroItem}
-          className="text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl min-h-[80px] sm:min-h-[100px] md:min-h-[120px]"
+          className="font-semibold leading-tight tracking-tight text-white" style={{ fontSize: "clamp(2rem, 8vw, 4.5rem)", minHeight: "clamp(2.5rem, 10vw, 5.5rem)" }}
         >
           <TypewriterText text="Hi, I'm Dev Raval" speed={80}>
             {(currentText: string) => {
@@ -558,7 +547,7 @@ function HeroSection() {
         </motion.h1>
         <motion.p
           variants={heroItem}
-          className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-slate-300 md:text-base lg:text-lg"
+          className="mx-auto mt-5 max-w-2xl leading-relaxed text-slate-300" style={{ fontSize: "clamp(0.875rem, 2vw, 1.125rem)" }}
         >
           <TypewriterText 
             text="Building scalable, AI-powered mobile applications that solve real-world problems. Passionate about creating impactful digital experiences." 
@@ -578,16 +567,8 @@ function HeroSection() {
             onClick={() => scrollToId("projects", 0, prefersReducedMotion)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            animate={shouldAnimateHeavy ? {
-              boxShadow: [
-                "0 0 20px rgba(56, 189, 248, 0.4)",
-                "0 0 40px rgba(56, 189, 248, 0.6)",
-                "0 0 20px rgba(56, 189, 248, 0.4)"
-              ]
-            } : {}}
-            transition={shouldAnimateHeavy ? {
-              boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-            } : {}}
+            animate={shouldAnimateHeavy ? glowAnimate : {}}
+            transition={shouldAnimateHeavy ? glowTransition : {}}
           >
             View My Work
             <motion.span 
@@ -599,23 +580,13 @@ function HeroSection() {
             </motion.span>
           </motion.button>
 
-          {/* Contact Me Button - Updated to match */}
+          {/* Contact Me Button */}
           <motion.button
             key="contact-btn"
-            className="primary-btn" 
+            className="outline-btn" 
             onClick={() => scrollToId("contact", 0, prefersReducedMotion)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            animate={shouldAnimateHeavy ? {
-              boxShadow: [
-                "0 0 20px rgba(56, 189, 248, 0.4)",
-                "0 0 40px rgba(56, 189, 248, 0.6)",
-                "0 0 20px rgba(56, 189, 248, 0.4)"
-              ]
-            } : {}}
-            transition={shouldAnimateHeavy ? {
-              boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-            } : {}}
           >
             Contact Me
             <motion.span 
@@ -725,16 +696,8 @@ function AboutSection() {
           custom={0}
           className="glass-card relative overflow-hidden p-6 sm:p-8"
           whileHover={{ scale: 1.02 }}
-          animate={shouldAnimateHeavy ? {
-            boxShadow: [
-              "0 0 20px rgba(56, 189, 248, 0.3)",
-              "0 0 40px rgba(56, 189, 248, 0.5)",
-              "0 0 20px rgba(56, 189, 248, 0.3)"
-            ]
-          } : {}}
-          transition={shouldAnimateHeavy ? {
-            boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-          } : {}}
+          animate={shouldAnimateHeavy ? glowAnimate : {}}
+          transition={shouldAnimateHeavy ? glowTransition : {}}
         >
           <motion.div 
             className="absolute inset-0 rounded-3xl bg-gradient-hero opacity-60"
@@ -750,15 +713,6 @@ function AboutSection() {
           <div className="relative z-10 flex flex-col items-center gap-4 text-center">
             <motion.div 
               className="inline-flex h-32 w-32 items-center justify-center rounded-full bg-gradient-title shadow-glow-cyan"
-              animate={shouldAnimateHeavy ? {
-                scale: [1, 1.05, 1],
-                rotate: [0, 5, -5, 0]
-              } : {}}
-              transition={shouldAnimateHeavy ? {
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut"
-              } : {}}
             >
               <span className="text-3xl font-semibold text-slate-950">DR</span>
             </motion.div>
@@ -772,17 +726,7 @@ function AboutSection() {
             <div className="mt-4 flex flex-wrap justify-center gap-4 text-center">
               <motion.div 
                 className="rounded-2xl bg-slate-900/80 px-5 py-3"
-                whileHover={{ scale: 1.1, y: -5, boxShadow: "0 0 20px rgba(56, 189, 248, 0.3)" }}
-                animate={shouldAnimateHeavy ? {
-                  boxShadow: [
-                    "0 0 20px rgba(56, 189, 248, 0.3)",
-                    "0 0 40px rgba(56, 189, 248, 0.5)",
-                    "0 0 20px rgba(56, 189, 248, 0.3)"
-                  ]
-                } : {}}
-                transition={shouldAnimateHeavy ? {
-                  boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-                } : {}}
+                whileHover={{ scale: 1.1, y: -5 }}
               >
                 <AnimatedCounter target={3} suffix="+" className="text-lg font-semibold text-white" />
                 <div className="mt-1 text-[11px] uppercase tracking-[0.18em] text-slate-400">
@@ -791,17 +735,7 @@ function AboutSection() {
               </motion.div>
               <motion.div 
                 className="rounded-2xl bg-slate-900/80 px-5 py-3"
-                whileHover={{ scale: 1.1, y: -5, boxShadow: "0 0 20px rgba(56, 189, 248, 0.3)" }}
-                animate={shouldAnimateHeavy ? {
-                  boxShadow: [
-                    "0 0 20px rgba(56, 189, 248, 0.3)",
-                    "0 0 40px rgba(56, 189, 248, 0.5)",
-                    "0 0 20px rgba(56, 189, 248, 0.3)"
-                  ]
-                } : {}}
-                transition={shouldAnimateHeavy ? {
-                  boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-                } : {}}
+                whileHover={{ scale: 1.1, y: -5 }}
               >
                 <AnimatedCounter target={1} className="text-lg font-semibold text-white" />
                 <div className="mt-1 text-[11px] uppercase tracking-[0.18em] text-slate-400">
@@ -931,16 +865,6 @@ function SkillGroup({
             viewport={{ once: true }}
             transition={{ delay: index * 0.05, duration: 0.3 }}
             whileHover={{ scale: 1.1, y: -2 }}
-            animate={shouldAnimateHeavy ? {
-              boxShadow: [
-                "0 0 0px rgba(56, 189, 248, 0)",
-                "0 0 8px rgba(56, 189, 248, 0.3)",
-                "0 0 0px rgba(56, 189, 248, 0)"
-              ],
-              transition: {
-                boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-              }
-            } : {}}
           >
             {item}
           </motion.span>
@@ -1018,16 +942,7 @@ function ExperienceSection() {
                     <motion.span
                       key={t}
                       className="rounded-full bg-slate-900/80 px-3 py-1 text-slate-200"
-                      animate={shouldAnimateHeavy ? {
-                        boxShadow: [
-                          "0 0 0px rgba(56, 189, 248, 0)",
-                          "0 0 8px rgba(56, 189, 248, 0.3)",
-                          "0 0 0px rgba(56, 189, 248, 0)"
-                        ],
-                        transition: {
-                          boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-                        }
-                      } : {}}
+
                     >
                       {t}
                     </motion.span>
@@ -1148,16 +1063,7 @@ function ProjectCard({
               viewport={{ once: true }}
               transition={{ delay: index * 0.1, duration: 0.3 }}
               whileHover={{ scale: 1.15, y: -3, backgroundColor: "rgba(56, 189, 248, 0.2)" }}
-              animate={shouldAnimateHeavy ? {
-                boxShadow: [
-                  "0 0 0px rgba(56, 189, 248, 0)",
-                  "0 0 8px rgba(56, 189, 248, 0.3)",
-                  "0 0 0px rgba(56, 189, 248, 0)"
-                ],
-                transition: {
-                  boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-                }
-              } : {}}
+
             >
               {tag}
             </motion.span>
@@ -1170,16 +1076,8 @@ function ProjectCard({
           className="primary-btn mt-4 inline-flex items-center gap-2"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          animate={shouldAnimateHeavy ? {
-            boxShadow: [
-              "0 0 20px rgba(56, 189, 248, 0.4)",
-              "0 0 40px rgba(56, 189, 248, 0.6)",
-              "0 0 20px rgba(56, 189, 248, 0.4)"
-            ]
-          } : {}}
-          transition={shouldAnimateHeavy ? {
-            boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-          } : {}}
+          animate={shouldAnimateHeavy ? glowAnimate : {}}
+          transition={shouldAnimateHeavy ? glowTransition : {}}
         >
           <FiGithub className="h-4 w-4" />
           View Code

@@ -2,11 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+/* ─── RESET ──────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
 
 html, body {
   overflow-x: hidden;
@@ -14,23 +11,51 @@ html, body {
   max-width: 100vw;
 }
 
-/* Mobile performance optimizations */
-@media (max-width: 768px) {
-  * {
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
-  }
-  
-  .glass-card {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
+/* ─── TAP HIGHLIGHT ──────────────────────────────────────────────────────── */
+a, button, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
 }
 
+/* ─── FOCUS ──────────────────────────────────────────────────────────────── */
+:focus:not(:focus-visible) { outline: none; }
+:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ─── SELECTION ──────────────────────────────────────────────────────────── */
+::selection { background: rgba(56, 189, 248, 0.2); color: #fff; }
+
+/* ─── SCROLLBAR ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #060810; }
+::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.3); border-radius: 2px; }
+
+/* ─── BODY ───────────────────────────────────────────────────────────────── */
 body {
-  @apply bg-background text-slate-100;
+  @apply bg-background text-slate-100 antialiased;
 }
 
+/* ─── MOBILE PERF: only glass cards, not everything ─────────────────────── */
+@media (max-width: 768px) {
+  .glass-card {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+/* ─── REDUCED MOTION ─────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html { scroll-behavior: auto; }
+}
+
+/* ─── LAYOUT ─────────────────────────────────────────────────────────────── */
 .gradient-text {
   @apply bg-gradient-title bg-clip-text text-transparent;
 }
@@ -39,18 +64,22 @@ body {
   @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
 }
 
+/* Fluid section padding — works on every screen size */
 .section-padding {
-  @apply py-20 md:py-28;
+  padding-top: clamp(3rem, 7vw, 7rem);
+  padding-bottom: clamp(3rem, 7vw, 7rem);
 }
 
+/* ─── GLASS CARD ─────────────────────────────────────────────────────────── */
 .glass-card {
-  @apply rounded-3xl border border-white/5 bg-slate-900/40 shadow-card backdrop-blur-xl transition-transform duration-300 ease-out;
+  @apply rounded-3xl border border-white/5 bg-slate-900/40 shadow-card backdrop-blur-xl transition-all duration-300 ease-out;
 }
 
 .interactive-card {
   @apply hover:-translate-y-1 hover:shadow-glow-cyan hover:border-sky-500/40;
 }
 
+/* ─── PILL / BADGE ───────────────────────────────────────────────────────── */
 .pill {
   @apply inline-flex items-center rounded-full border border-white/10 bg-slate-900/60 px-3 py-1 text-xs font-medium uppercase tracking-[0.22em] text-slate-400;
 }
@@ -59,25 +88,40 @@ body {
   @apply inline-flex items-center rounded-full bg-slate-900/80 px-3 py-1 text-xs font-medium text-slate-200 border border-slate-700/60;
 }
 
+/* ─── NAV ────────────────────────────────────────────────────────────────── */
 .nav-link {
   @apply text-sm text-slate-200 hover:text-white transition-colors;
 }
 
+/* ─── BUTTONS ────────────────────────────────────────────────────────────── */
 .primary-btn {
-  @apply inline-flex items-center justify-center rounded-xl bg-sky-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-glow-cyan transition-transform transition-shadow hover:-translate-y-0.5 hover:shadow-glow-purple;
+  @apply inline-flex items-center justify-center rounded-xl bg-sky-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-glow-cyan transition-all hover:-translate-y-0.5 hover:shadow-glow-purple active:translate-y-0;
 }
 
 .outline-btn {
-  @apply inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-900/60 px-6 py-3 text-sm font-semibold text-slate-100 transition-colors hover:border-sky-500/70;
+  @apply inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-900/60 px-6 py-3 text-sm font-semibold text-slate-100 transition-all hover:border-sky-500/70 hover:text-sky-400 hover:-translate-y-0.5 active:translate-y-0;
 }
 
 .icon-btn {
   @apply inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-800 bg-slate-900/60 text-slate-300 transition-colors hover:border-sky-500 hover:text-sky-400;
 }
 
+/* ─── MENU BACKDROP ──────────────────────────────────────────────────────── */
 .menu-backdrop {
   background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.25), transparent 55%),
     radial-gradient(circle at bottom right, rgba(129, 140, 248, 0.2), transparent 55%);
 }
 
+/* ─── SECTION HEADER TEXT — fluid across all screens ────────────────────── */
+.section-title {
+  font-size: clamp(1.75rem, 5vw, 3.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
 
+/* ─── SAFE AREA for notched phones (iPhone X+, Android cutouts) ──────────── */
+.footer-safe {
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
