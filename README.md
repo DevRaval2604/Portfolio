@@ -10,10 +10,20 @@ Building scalable, AI-powered mobile applications that solve real-world problems
 
 <br />
 
-[![Live](https://img.shields.io/badge/Live-portfolio.devraval.dev-38bdf8?style=flat-square)](https://portfolio.devraval.dev)
-[![Next.js](https://img.shields.io/badge/Next.js_15-black?style=flat-square&logo=nextdotjs)](https://nextjs.org)
+[![Live](https://img.shields.io/badge/Live-portfolio.devraval.dev-38bdf8?style=flat-square&logo=vercel&logoColor=white)](https://portfolio.devraval.dev)
+[![Next.js](https://img.shields.io/badge/Next.js_15-000000?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Flutter](https://img.shields.io/badge/Flutter-02569B?style=flat-square&logo=flutter&logoColor=white)](https://flutter.dev)
+[![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=flat-square&logo=firebase&logoColor=black)](https://firebase.google.com)
+[![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=flat-square&logo=framer&logoColor=white)](https://framer.com/motion)
+[![Vercel](https://img.shields.io/badge/Deployed_on_Vercel-000000?style=flat-square&logo=vercel&logoColor=white)](https://vercel.com)
+
+<br />
+
+[![GitHub](https://img.shields.io/badge/GitHub-DevRaval2604-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/DevRaval2604)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-devraval2604-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://linkedin.com/in/devraval2604)
+[![Email](https://img.shields.io/badge/Email-devraval2004@gmail.com-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:devraval2004@gmail.com)
 
 <br />
 
@@ -21,27 +31,28 @@ Building scalable, AI-powered mobile applications that solve real-world problems
 
 ---
 
-## Overview
+## 📖 Overview
 
 Personal portfolio built with Next.js 15, TypeScript, Tailwind CSS, and Framer Motion. Designed with a dark space aesthetic, fluid typography, and full accessibility support across every screen size.
 
 ---
 
-## Stack
+## 🛠️ Stack
 
 | Layer | Technology |
 |---|---|
-| Framework | Next.js 15 (App Router) |
-| Language | TypeScript |
-| Styling | Tailwind CSS + custom design tokens |
-| Animation | Framer Motion |
-| Font | Inter via `next/font/google` |
-| Icons | React Icons |
-| OG Image | Auto-generated via `next/og` |
+| 🧱 Framework | Next.js 15 (App Router) |
+| 🔷 Language | TypeScript |
+| 🎨 Styling | Tailwind CSS + custom design tokens |
+| 🌊 Animation | Framer Motion |
+| 🔤 Font | Inter via `next/font/google` |
+| 🔣 Icons | React Icons |
+| 🖼️ OG Image | Auto-generated via `next/og` |
+| ☁️ Deployment | Vercel |
 
 ---
 
-## Project Structure
+## 🗂️ Project Structure
 
 ```
 Portfolio/
@@ -68,7 +79,7 @@ Portfolio/
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
 ```bash
 # Clone
@@ -92,9 +103,9 @@ npm run start
 
 ---
 
-## Configuration
+## ⚙️ Configuration
 
-**VS Code — suppress Tailwind warnings**
+**🔵 VS Code — suppress Tailwind warnings**
 
 Create `.vscode/settings.json`:
 
@@ -105,7 +116,7 @@ Create `.vscode/settings.json`:
 }
 ```
 
-**`tsconfig.json` — path aliases**
+**🔷 `tsconfig.json` — path aliases**
 
 ```json
 {
@@ -119,31 +130,31 @@ Create `.vscode/settings.json`:
 
 ---
 
-## Design Tokens
+## 🎨 Design Tokens
 
 | Token | Value |
 |---|---|
-| `background` | `#060810` |
-| `gradient-title` | `135deg — cyan → violet → emerald` |
-| `shadow-glow-cyan` | `0 0 28px rgba(56,189,248,0.40)` |
-| `shadow-glow-purple` | `0 0 28px rgba(129,140,248,0.40)` |
-| `shadow-card` | `0 8px 40px rgba(0,0,0,0.45)` |
+| 🌑 `background` | `#060810` |
+| 🌈 `gradient-title` | `135deg — cyan → violet → emerald` |
+| 🔵 `shadow-glow-cyan` | `0 0 28px rgba(56,189,248,0.40)` |
+| 🟣 `shadow-glow-purple` | `0 0 28px rgba(129,140,248,0.40)` |
+| ⬛ `shadow-card` | `0 8px 40px rgba(0,0,0,0.45)` |
 
 ---
 
-## Accessibility
+## ♿ Accessibility
 
-- Skip to content link for keyboard users
-- `aria-current="page"` on active nav item
-- `aria-live="polite"` on typewriter text
-- Focus trap on mobile menu (Tab / Shift+Tab / Escape)
-- `focus-visible` outlines — shown for keyboard, hidden for mouse
-- `prefers-reduced-motion` respected — all animations disabled gracefully
-- Safe area insets for notched iPhones and Android cutouts
+- ⌨️ Skip to content link for keyboard users
+- 🔖 `aria-current="page"` on active nav item
+- 📢 `aria-live="polite"` on typewriter text
+- 🪤 Focus trap on mobile menu (Tab / Shift+Tab / Escape)
+- 👁️ `focus-visible` outlines — shown for keyboard, hidden for mouse
+- 🎭 `prefers-reduced-motion` respected — all animations disabled gracefully
+- 📱 Safe area insets for notched iPhones and Android cutouts
 
 ---
 
-## License
+## 📄 License
 
 © 2026 Dev Raval. All rights reserved.
 
@@ -151,6 +162,6 @@ Create `.vscode/settings.json`:
 
 <div align="center">
 
-[portfolio.devraval.dev](https://portfolio.devraval.dev) · [GitHub](https://github.com/DevRaval2604) · [LinkedIn](https://linkedin.com/in/devraval2604)
+[🌐 portfolio.devraval.dev](https://portfolio.devraval.dev) · [💻 GitHub](https://github.com/DevRaval2604) · [🔗 LinkedIn](https://linkedin.com/in/devraval2604) · [📧 Email](mailto:devraval2004@gmail.com)
 
 </div>
