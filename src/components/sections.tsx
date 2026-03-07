@@ -330,7 +330,7 @@ export function Shell() {
         style={{ scaleX: scrollProgress }}
       />
 
-      <header className="fixed top-0 left-0 right-0 z-[9999] w-full border-b border-slate-800/70 bg-slate-950/95 md:bg-slate-950/80 md:backdrop-blur-xl">
+      <header className="fixed top-0 left-0 right-0 z-[9999] w-full border-b border-slate-800/70 bg-slate-950/95 md:bg-slate-950/80 md:backdrop-blur-xl" style={{ opacity: mounted ? 1 : 0, transition: "opacity 0.15s ease" }}>
         <a
           href="#hero"
           className="sr-only focus:not-sr-only focus:absolute focus:z-[99999] focus:top-4 focus:left-4 bg-sky-500 text-slate-950 px-4 py-2 rounded-lg"
@@ -339,9 +339,7 @@ export function Shell() {
         </a>
         <div className="section-container flex h-16 items-center justify-between md:h-20">
           <motion.button
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
+
             className="flex items-center text-base font-semibold text-slate-100 transition-opacity hover:opacity-80"
             onClick={() => scrollToId("hero", 0, prefersReducedMotion)}
             aria-label="Scroll to top"
@@ -359,9 +357,7 @@ export function Shell() {
               <motion.a
                 key={item.id}
                 href={`#${item.id}`}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+
                 onClick={(e) => {
                   e.preventDefault();
                   scrollToId(item.id, 0, prefersReducedMotion);
@@ -377,12 +373,9 @@ export function Shell() {
               </motion.a>
             ))}
             <motion.button
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={shouldAnimateHeavy ? { opacity: 1, scale: 1, ...glowAnimate } : { opacity: 1, scale: 1 }}
+              animate={shouldAnimateHeavy ? { ...glowAnimate } : {}}
               transition={{
                 ...(shouldAnimateHeavy && glowTransition),
-                duration: 0.5,
-                delay: sections.length * 0.1,
               }}
               onClick={() => scrollToId("contact", 0, prefersReducedMotion)}
               className="ml-2 rounded-full bg-sky-500 px-5 py-2 text-xs font-semibold text-slate-950 shadow-glow-cyan transition-all hover:scale-105 hover:shadow-glow-purple"
@@ -392,9 +385,7 @@ export function Shell() {
           </nav>
 
           <motion.button
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
+
             ref={menuButtonRef}
             className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-700 bg-slate-900/70 text-slate-200 transition-colors hover:border-sky-500/70 focus:outline-none md:hidden"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -448,7 +439,7 @@ export function Shell() {
         </div>
       </header>
 
-      <div className="relative min-h-[100svh] bg-gradient-hero pt-16 md:pt-20 overflow-x-hidden">
+      <div className="relative min-h-[100svh] bg-gradient-hero pt-16 md:pt-20 overflow-x-hidden" style={{ isolation: "isolate", opacity: mounted ? 1 : 0, transition: "opacity 0.15s ease" }}>
         <FloatingParticles />
 
         <main>
@@ -472,7 +463,7 @@ export function Shell() {
 }
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0.001, y: 16 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
@@ -481,20 +472,21 @@ const fadeUp = {
 };
 
 const heroContainer = {
-  hidden: { opacity: 0, y: 32 },
+  hidden: { opacity: 0.001, y: 16 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.7,
       ease: [0.16, 1, 0.3, 1],
-      staggerChildren: 0.08
+      staggerChildren: 0.08,
+      delayChildren: 0.1
     }
   }
 };
 
 const heroItem = {
-  hidden: { opacity: 0, y: 18 },
+  hidden: { opacity: 0.001, y: 12 },
   visible: {
     opacity: 1,
     y: 0,
@@ -521,18 +513,14 @@ function HeroSection() {
         transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
       />
       <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.7 }}
-        variants={heroContainer}
         className="relative mx-auto max-w-4xl pt-6 text-center md:pt-10"
       >
-        <motion.p variants={heroItem} className="pill mx-auto mb-6">
+        <motion.p  className="pill mx-auto mb-6">
           Software Developer & Flutter Engineer
         </motion.p>
         <motion.h1
-          variants={heroItem}
-          className="font-semibold leading-tight tracking-tight text-white" style={{ fontSize: "clamp(2rem, 8vw, 4.5rem)", minHeight: "clamp(2.5rem, 10vw, 5.5rem)" }}
+          
+          className="font-semibold leading-tight tracking-tight text-white" style={{ fontSize: "clamp(2rem, 8vw, 4.5rem)", minHeight: "clamp(4rem, 12vw, 7rem)" }}
         >
           <TypewriterText text="Hi, I'm Dev Raval" speed={80}>
             {(currentText: string) => {
@@ -551,7 +539,7 @@ function HeroSection() {
           </TypewriterText>
         </motion.h1>
         <motion.p
-          variants={heroItem}
+          
           className="mx-auto mt-5 max-w-2xl leading-relaxed text-slate-300" style={{ fontSize: "clamp(0.875rem, 2vw, 1.125rem)" }}
         >
           <TypewriterText 
@@ -563,7 +551,7 @@ function HeroSection() {
         
         {/* Buttons Container */}
         <motion.div
-          variants={heroItem}
+          
           className="mt-8 flex flex-wrap items-center justify-center gap-4"
         >
           {/* View My Work Button */}
@@ -605,7 +593,7 @@ function HeroSection() {
         </motion.div>
 
         <motion.div
-          variants={heroItem}
+          
           className="mt-12 sm:mt-16 flex flex-col items-center gap-3 text-xs uppercase tracking-[0.3em] text-slate-500"
         >
           <motion.span
@@ -641,9 +629,7 @@ function SectionHeader({
   return (
     <motion.div 
       className="mb-12 text-center"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
+
       transition={{ duration: 0.6 }}
     >
       <motion.p 
@@ -694,11 +680,6 @@ function AboutSection() {
       />
       <div className="grid gap-6 md:gap-8 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1.6fr)]">
         <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeUp}
-          custom={0}
           className="glass-card relative overflow-hidden p-6 sm:p-8"
           whileHover={{ scale: 1.02 }}
           animate={shouldAnimateHeavy ? glowAnimate : {}}
@@ -752,11 +733,6 @@ function AboutSection() {
         </motion.div>
 
         <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={fadeUp}
-          custom={1}
           className="flex flex-col gap-6 text-sm leading-relaxed text-slate-300 md:text-[15px]"
         >
           <p>
@@ -845,10 +821,8 @@ function SkillGroup({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
       whileHover={{ y: -8, scale: 1.02 }}
       animate={shouldAnimateHeavy ? {
         y: [0, -6, 0],
@@ -865,9 +839,7 @@ function SkillGroup({
           <motion.span 
             key={item} 
             className="badge-pill"
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
+
             transition={{ delay: index * 0.05, duration: 0.3 }}
             whileHover={{ scale: 1.1, y: -2 }}
           >
@@ -896,11 +868,6 @@ function ExperienceSection() {
         <div className="absolute left-1/2 top-10 h-full w-px -translate-x-1/2 bg-gradient-to-b from-sky-500 via-sky-500/40 to-transparent" />
         <div className="relative max-w-2xl w-full">
           <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-            custom={0}
             whileHover={{ y: -8, scale: 1.01 }}
             className="glass-card interactive-card relative mt-4 ml-auto mr-auto border border-sky-500/40 bg-slate-950/70 p-5 sm:p-7 shadow-glow-cyan"
           >
@@ -1037,10 +1004,8 @@ function ProjectCard({
 
   return (
       <motion.article
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         whileHover={{ y: -10, scale: 1.01 }}
         className="glass-card interactive-card grid gap-6 sm:gap-8 border border-slate-800/80 bg-slate-950/70 p-5 sm:p-7 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1.1fr)]"
       >
@@ -1063,9 +1028,7 @@ function ProjectCard({
             <motion.span
               key={tag}
               className="rounded-full bg-slate-900/80 px-3 py-1 text-slate-200"
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
+
               transition={{ delay: index * 0.1, duration: 0.3 }}
               whileHover={{ scale: 1.15, y: -3, backgroundColor: "rgba(56, 189, 248, 0.2)" }}
 
@@ -1145,10 +1108,8 @@ function EducationCard({
 }: EducationCardProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
       whileHover={{ y: -6, scale: 1.01 }}
       className="glass-card interactive-card flex flex-col gap-3 border border-slate-800/80 bg-slate-950/70 p-5 sm:p-7"
     >
@@ -1219,10 +1180,6 @@ function ContactCard({ label, value }: ContactCardProps) {
   );
 
   const animationProps = {
-    initial: { opacity: 0, y: 16 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true },
-    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
     whileHover: { y: -4, scale: 1.01 }
   };
 

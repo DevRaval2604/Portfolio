@@ -37,6 +37,17 @@ body {
   @apply bg-background text-slate-100 antialiased;
 }
 
+/* ─── PREVENT FLASH ON LOAD ──────────────────────────────────────────────── */
+/* Ensures page background is visible immediately before JS hydrates */
+html {
+  background-color: #060810;
+}
+
+/* Prevent invisible content flash — sections start visible, JS enhances */
+section {
+  opacity: 1;
+}
+
 /* ─── MOBILE PERF: only glass cards, not everything ─────────────────────── */
 @media (max-width: 768px) {
   .glass-card {

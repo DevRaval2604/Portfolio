@@ -147,7 +147,7 @@ export default async function Image() {
             lineHeight: 1.6,
           }}
         >
-          Building scalable, AI-powered mobile applications with Flutter, Firebase & Gemini API
+          Building scalable mobile applications with Flutter, Firebase & modern technologies
         </div>
 
         {/* Tech tags */}
@@ -158,7 +158,7 @@ export default async function Image() {
             marginTop: "32px",
           }}
         >
-          {["Flutter", "Firebase", "Gemini AI", "Dart"].map((tag) => (
+          {["Flutter", "Firebase", "Java", "Dart"].map((tag) => (
             <div
               key={tag}
               style={{
@@ -186,7 +186,7 @@ export default async function Image() {
             letterSpacing: "0.05em",
           }}
         >
-          devraval.com
+          portfolio.devraval.dev
         </div>
       </div>
     ),
