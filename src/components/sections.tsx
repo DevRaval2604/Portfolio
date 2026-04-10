@@ -787,9 +787,9 @@ function SkillsSection() {
             "Git",
             "Android Studio",
             "VS Code",
-            "Linux Terminal",
-            "Firebase Emulator",
-            "Xcode"
+            "Xcode",
+            "Canva",
+            "Linux Terminal"
           ]}
         />
         <SkillGroup
@@ -799,11 +799,12 @@ function SkillsSection() {
         <SkillGroup
           title="Core Concepts"
           items={[
-            "Data Structures",
-            "Algorithms",
+            "Data Structures and Algorithms",
+            "Operating Systems",
             "DBMS",
-            "OOP",
-            "System Design"
+            "OOPS",
+            "Computer Networks",
+            "Software Engineering"
           ]}
           highlight
         />
