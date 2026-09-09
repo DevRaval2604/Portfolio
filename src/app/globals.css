@@ -60,8 +60,7 @@ main:focus, section[tabindex="-1"]:focus { outline: none; }
 .menu-toggle { display: none; align-items: center; justify-content: center; width: 2.875rem; height: 2.875rem; padding: 0; border: 1px solid var(--line); border-radius: .375rem; background: var(--paper); color: var(--ink); }
 .menu-toggle svg { width: 1.4rem; height: 1.4rem; }
 .mobile-dialog { position: fixed; inset: 0 0 auto auto; width: min(100%, 29rem); max-width: 100%; max-height: 100%; max-height: 100dvh; margin: 0; padding: 0; border: none; color: var(--ink); background: var(--paper); overflow-y: auto; overscroll-behavior: contain; border-radius: 0 0 0 1rem; box-shadow: 0 24px 80px #0b183333; }
-.mobile-dialog:focus { outline: none; }
-.menu-toggle:focus-visible, .mobile-dialog :focus-visible { outline-color: var(--navy); }
+.menu-toggle:focus, .mobile-dialog:focus, .mobile-dialog :focus { outline: none; }
 .mobile-dialog::backdrop { background: rgb(8 18 37 / 65%); }
 .mobile-menu-content { padding: 0 max(1.25rem, env(safe-area-inset-right)) max(1.5rem, env(safe-area-inset-bottom)) max(1.25rem, env(safe-area-inset-left)); }
 .mobile-menu-top { min-height: var(--header-height); display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--line); }

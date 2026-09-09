@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { profile } from "@/components/content";
-import "./globals.css";
 
 const inter = localFont({
   src: "./fonts/inter-latin.woff2",
@@ -16,18 +15,16 @@ export const metadata: Metadata = {
   keywords: ["Dev Raval", "Business Development", "Software Development", "Business Research", "Communication", "Microsoft Excel", "SQL", "Flutter", "Firebase"],
   authors: [{ name: "Dev Raval", url: "https://github.com/DevRaval2604" }],
   openGraph: {
-    title: "Dev Raval – Software Developer & Flutter Engineer",
-    description:
-      "Building scalable, AI-powered mobile applications. Explore my work in Flutter, Firebase, and AI integration.",
+    title: `Dev Raval – ${profile.headline}`,
+    description: profile.summary,
     siteName: "Dev Raval Portfolio",
     locale: "en_IN",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Dev Raval – Software Developer & Flutter Engineer",
-    description:
-      "Building scalable, AI-powered mobile applications. Explore my work in Flutter, Firebase, and AI integration.",
+    title: `Dev Raval – ${profile.headline}`,
+    description: profile.summary,
   },
   robots: { index: true, follow: true },
 };

@@ -1,58 +1,192 @@
-# Dev Raval — Portfolio
+<div align="center">
 
-A portfolio combining technology and business development experience. The headline, About section, skills, and current Budventure internship are based on the supplied resumes. The original project details, Maxgen internship, education, contact information, navigation, and overall design are preserved.
+<br />
 
-## Run in VS Code
+Dev Raval — Portfolio
 
-Open this folder in VS Code. In its terminal, run:
+Software Developer & Business Development Professional
 
-```bash
-npm ci
+Combining software development, business research, and clear communication to understand requirements and deliver practical solutions.
+
+<br />
+
+
+
+
+
+
+
+
+
+
+<br />
+
+
+
+
+
+<br />
+
+</div>
+
+📖 Overview
+
+Personal portfolio built with Next.js 14, TypeScript, Tailwind CSS, and React. Designed with a light background, navy surfaces, blue accents, fluid typography, and responsive layouts for mobile, tablet, and desktop screens.
+
+🛠️ Stack
+
+Layer
+
+Technology
+
+🧱 Framework
+
+Next.js 14 (App Router)
+
+🔷 Language
+
+TypeScript
+
+🎨 Styling
+
+Tailwind CSS + custom design tokens
+
+🌊 Animation
+
+CSS keyframes and transitions; Framer Motion remains an installed dependency
+
+🔤 Font
+
+Locally hosted Inter via next/font/local
+
+🔣 Icons
+
+React Icons
+
+🖼️ OG Image
+
+Auto-generated via next/og
+
+☁️ Deployment
+
+Vercel
+
+🗂️ Project Structure
+
+Portfolio/
+├── src/
+│   ├── app/
+│   │   ├── fonts/                    # Locally hosted Inter font
+│   │   ├── globals.css               # Design system & utilities
+│   │   ├── layout.tsx                # Root layout, fonts, SEO metadata
+│   │   ├── page.tsx                  # Entry point
+│   │   └── opengraph-image.tsx       # Auto-generated OG image (1200×630)
+│   │
+│   └── components/
+│       ├── sections.tsx              # Page sections & static content
+│       ├── content.ts                # Profile, skills, projects & education
+│       ├── header.tsx                # Navigation, active tracking & mobile dialog
+│       ├── profile-animation.tsx     # CSS-animated orbit graphic
+│       ├── navigation.ts             # Section definitions
+│       ├── portfolio.ts              # TypeScript interfaces
+│       ├── useActiveSection.ts       # Retained legacy navigation hook
+│       ├── useFocusTrap.ts           # Retained legacy focus-trap hook
+│       ├── useIsMobile.ts            # Retained legacy mobile-detection hook
+│       ├── usePrefersReducedMotion.ts
+│       └── useScrollLock.ts
+│
+├── scripts/
+│   └── serve.mjs                     # Local production export server
+├── tailwind.config.ts                # Tailwind configuration
+└── package.json
+
+🚀 Getting Started
+
+# Clone
+git clone https://github.com/DevRaval2604/portfolio.git
+cd portfolio
+
+# Install
+npm install
+
+# Develop
 npm run dev
-```
 
-Open http://localhost:3000 in your browser. Node.js 20 or later is recommended.
+Open http://localhost:3000
 
-## Production build
-
-```bash
+# Build for production
 npm run build
-npm start
-```
+npm run start
 
-The production site is exported to `out/`. `npm start` serves that export locally at http://localhost:3000, without an additional server package. The `out/` folder can also be deployed to a static host. The existing live domain has not been changed by this redesign.
+⚙️ Configuration
 
-## Where to make changes
+🔵 VS Code — suppress Tailwind warnings
 
-- `src/components/sections.tsx` — page sections and original text.
-- `src/components/content.ts` — profile copy, resume-based skills, Budventure details, and the preserved project and education data.
-- `src/components/profile-animation.tsx` — the continuously playing abstract profile animation.
-- `src/components/header.tsx` — navigation, active section tracking, and mobile menu.
-- `src/app/globals.css` — the new visual design, responsive layouts, and motion rules.
-- `src/app/layout.tsx` — the original page metadata and locally hosted Inter font.
-- `src/app/opengraph-image.tsx` — the original social preview image, preserved.
+Create .vscode/settings.json:
 
-The original dependency versions and lockfile are retained. Static sections render without client-side JavaScript. The only interactive client component is the navigation. The redesigned page no longer imports the continuous particle, typewriter, or floating-card animations.
+{
+  "css.validate": false,
+  "css.lint.unknownAtRules": "ignore"
+}
 
-## Responsive and accessibility behavior
+🔷 tsconfig.json — path aliases
 
-- Fluid typography, wrapping content, and bounded layouts for small phones through large desktops.
-- One-column phone layouts; two-column tablet layouts where appropriate; wider desktop grids.
-- A native mobile dialog with keyboard focus handling, Escape dismissal, and a scrollable menu for short viewports.
-- Visible keyboard focus, skip navigation, and touch controls at least 44px high.
-- Reduced-motion preferences, forced-color mode, and print styles.
-- All main text is available in the initial HTML; the local font uses swap loading.
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
 
-## Validation
+🎨 Design Tokens
 
-- Production build and TypeScript checks passed.
-- All three original project records and the Maxgen internship were checked for exact preservation.
-- All 22 skills and tools from the non-tech resume are covered; original technical skills are retained.
-- The profile count is 2 internships, including Budventure from August 2026 to Present.
-- The profile animation plays continuously using CSS, with a static reduced-motion state.
-- All external link destinations match the supplied project.
-- Internal anchors and required local asset paths were checked.
-- The sampled text/background color pairs exceed 4.5:1 contrast.
-- Browser-based interaction tests, visual checks on physical devices, and Lighthouse measurements have not been performed. No Lighthouse score is claimed.
+Token
+
+Value
+
+🌑 --paper
+
+#ffffff
+
+🌈 --blue
+
+#315de6
+
+🔵 --ink
+
+#17243a
+
+🟣 --muted
+
+#536178
+
+⬛ --navy
+
+#101d31
+
+♿ Accessibility
+
+⌨️ Skip to content link for keyboard users
+
+🔖 aria-current="location" on active nav item
+
+📢 Descriptive aria-label attributes on navigation and menu controls
+
+🪤 Native mobile dialog with focus containment and Escape dismissal
+
+👁️ focus-visible styles on page controls; focus outlines are disabled for mobile navigation
+
+🎭 prefers-reduced-motion respected — all animations disabled gracefully
+
+📱 Safe area insets in the mobile menu for notched iPhones and Android cutouts
+
+📄 License
 
 © 2026 Dev Raval. All rights reserved.
+
+<div align="center">
+
+🌐 portfolio.devraval.dev · 💻 GitHub · 🔗 LinkedIn · 📧 Email
+
+</div>
