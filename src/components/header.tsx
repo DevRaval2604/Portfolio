@@ -63,10 +63,10 @@ export function Header() {
       </div>
       <dialog ref={dialogRef} id="mobile-menu" className="mobile-dialog" aria-label="Main navigation" onClose={() => setMenuOpen(false)} onCancel={() => setMenuOpen(false)} onClick={event => { if (event.target === dialogRef.current) closeMenu(); }}>
         <div className="mobile-menu-content">
-          <div className="mobile-menu-top"><span className="brand"><span className="brand-mark" aria-hidden="true">DR</span>Dev Raval</span><button type="button" className="menu-toggle" aria-label="Close navigation" onClick={() => closeMenu()}><FiX aria-hidden="true" /></button></div>
+          <div className="mobile-menu-top"><span className="brand"><span className="brand-mark" aria-hidden="true">DR</span>Dev Raval</span><button type="button" className="menu-toggle" aria-label="Close navigation" autoFocus onClick={() => closeMenu()}><FiX aria-hidden="true" /></button></div>
           <nav aria-label="Mobile navigation">
-            {sections.map((section, index) => <a key={section.id} href={`#${section.id}`} aria-current={activeSection === section.id ? "location" : undefined} onClick={() => navigateToSection(section.id)}><span className="mobile-nav-number" aria-hidden="true">0{index + 1}</span>{section.label}<FiArrowUpRight aria-hidden="true" /></a>)}
-            <a href="#contact" className="button button-primary" onClick={() => navigateToSection("contact")}>Let&apos;s Talk<FiArrowUpRight aria-hidden="true" /></a>
+            {sections.map(section => <a key={section.id} href={`#${section.id}`} aria-current={activeSection === section.id ? "location" : undefined} onClick={() => navigateToSection(section.id)}>{section.label}<FiArrowUpRight aria-hidden="true" /></a>)}
+            <a href="#contact" className="button header-contact" aria-current={activeSection === "contact" ? "location" : undefined} onClick={() => navigateToSection("contact")}>Let&apos;s Talk<FiArrowUpRight aria-hidden="true" /></a>
           </nav>
         </div>
       </dialog>

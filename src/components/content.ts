@@ -181,7 +181,7 @@ export const projects = [
 export const education = [
   {
     "degree": "MSc - Information Technology",
-    "institution": "Dhirubhai Ambani University",
+    "institution": "Dhirubhai Ambani University (DAIICT)",
     "location": "Gandhinagar, Gujarat",
     "duration": "2024 - 2026"
   },
