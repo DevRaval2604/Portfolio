@@ -1,167 +1,58 @@
-<div align="center">
-
-<br />
-
 # Dev Raval — Portfolio
 
-**Software Developer & Flutter Engineer**
+A portfolio combining technology and business development experience. The headline, About section, skills, and current Budventure internship are based on the supplied resumes. The original project details, Maxgen internship, education, contact information, navigation, and overall design are preserved.
 
-Building scalable, AI-powered mobile applications that solve real-world problems.
+## Run in VS Code
 
-<br />
-
-[![Live](https://img.shields.io/badge/Live-portfolio.devraval.dev-38bdf8?style=flat-square&logo=vercel&logoColor=white)](https://portfolio.devraval.dev)
-[![Next.js](https://img.shields.io/badge/Next.js_15-000000?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://typescriptlang.org)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![Flutter](https://img.shields.io/badge/Flutter-02569B?style=flat-square&logo=flutter&logoColor=white)](https://flutter.dev)
-[![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=flat-square&logo=firebase&logoColor=black)](https://firebase.google.com)
-[![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=flat-square&logo=framer&logoColor=white)](https://framer.com/motion)
-[![Vercel](https://img.shields.io/badge/Deployed_on_Vercel-000000?style=flat-square&logo=vercel&logoColor=white)](https://vercel.com)
-
-<br />
-
-[![GitHub](https://img.shields.io/badge/GitHub-DevRaval2604-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/DevRaval2604)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-devraval2604-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://linkedin.com/in/devraval2604)
-[![Email](https://img.shields.io/badge/Email-devraval2004@gmail.com-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:devraval2004@gmail.com)
-
-<br />
-
-</div>
-
----
-
-## 📖 Overview
-
-Personal portfolio built with Next.js 15, TypeScript, Tailwind CSS, and Framer Motion. Designed with a dark space aesthetic, fluid typography, and full accessibility support across every screen size.
-
----
-
-## 🛠️ Stack
-
-| Layer | Technology |
-|---|---|
-| 🧱 Framework | Next.js 15 (App Router) |
-| 🔷 Language | TypeScript |
-| 🎨 Styling | Tailwind CSS + custom design tokens |
-| 🌊 Animation | Framer Motion |
-| 🔤 Font | Inter via `next/font/google` |
-| 🔣 Icons | React Icons |
-| 🖼️ OG Image | Auto-generated via `next/og` |
-| ☁️ Deployment | Vercel |
-
----
-
-## 🗂️ Project Structure
-
-```
-Portfolio/
-├── src/
-│   ├── app/
-│   │   ├── globals.css               # Design system & utilities
-│   │   ├── layout.tsx                # Root layout, fonts, SEO metadata
-│   │   ├── page.tsx                  # Entry point
-│   │   └── opengraph-image.tsx       # Auto-generated OG image (1200×630)
-│   │
-│   └── components/
-│       ├── sections.tsx              # All page sections & UI components
-│       ├── navigation.ts             # Section definitions
-│       ├── portfolio.ts              # TypeScript interfaces
-│       ├── useActiveSection.ts       # Intersection Observer nav tracking
-│       ├── useFocusTrap.ts           # Focus trap for mobile menu
-│       ├── useIsMobile.ts            # Mobile detection via MediaQuery
-│       ├── usePrefersReducedMotion.ts
-│       └── useScrollLock.ts
-│
-├── tailwind.config.ts                # Custom tokens, shadows, gradients
-└── package.json
-```
-
----
-
-## 🚀 Getting Started
+Open this folder in VS Code. In its terminal, run:
 
 ```bash
-# Clone
-git clone https://github.com/DevRaval2604/portfolio.git
-cd portfolio
-
-# Install
-npm install
-
-# Develop
+npm ci
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+Open http://localhost:3000 in your browser. Node.js 20 or later is recommended.
+
+## Production build
 
 ```bash
-# Build for production
 npm run build
-npm run start
+npm start
 ```
 
----
+The production site is exported to `out/`. `npm start` serves that export locally at http://localhost:3000, without an additional server package. The `out/` folder can also be deployed to a static host. The existing live domain has not been changed by this redesign.
 
-## ⚙️ Configuration
+## Where to make changes
 
-**🔵 VS Code — suppress Tailwind warnings**
+- `src/components/sections.tsx` — page sections and original text.
+- `src/components/content.ts` — profile copy, resume-based skills, Budventure details, and the preserved project and education data.
+- `src/components/profile-animation.tsx` — the continuously playing abstract profile animation.
+- `src/components/header.tsx` — navigation, active section tracking, and mobile menu.
+- `src/app/globals.css` — the new visual design, responsive layouts, and motion rules.
+- `src/app/layout.tsx` — the original page metadata and locally hosted Inter font.
+- `src/app/opengraph-image.tsx` — the original social preview image, preserved.
 
-Create `.vscode/settings.json`:
+The original dependency versions and lockfile are retained. Static sections render without client-side JavaScript. The only interactive client component is the navigation. The redesigned page no longer imports the continuous particle, typewriter, or floating-card animations.
 
-```json
-{
-  "css.validate": false,
-  "css.lint.unknownAtRules": "ignore"
-}
-```
+## Responsive and accessibility behavior
 
-**🔷 `tsconfig.json` — path aliases**
+- Fluid typography, wrapping content, and bounded layouts for small phones through large desktops.
+- One-column phone layouts; two-column tablet layouts where appropriate; wider desktop grids.
+- A native mobile dialog with keyboard focus handling, Escape dismissal, and a scrollable menu for short viewports.
+- Visible keyboard focus, skip navigation, and touch controls at least 44px high.
+- Reduced-motion preferences, forced-color mode, and print styles.
+- All main text is available in the initial HTML; the local font uses swap loading.
 
-```json
-{
-  "compilerOptions": {
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
-}
-```
+## Validation
 
----
-
-## 🎨 Design Tokens
-
-| Token | Value |
-|---|---|
-| 🌑 `background` | `#060810` |
-| 🌈 `gradient-title` | `135deg — cyan → violet → emerald` |
-| 🔵 `shadow-glow-cyan` | `0 0 28px rgba(56,189,248,0.40)` |
-| 🟣 `shadow-glow-purple` | `0 0 28px rgba(129,140,248,0.40)` |
-| ⬛ `shadow-card` | `0 8px 40px rgba(0,0,0,0.45)` |
-
----
-
-## ♿ Accessibility
-
-- ⌨️ Skip to content link for keyboard users
-- 🔖 `aria-current="page"` on active nav item
-- 📢 `aria-live="polite"` on typewriter text
-- 🪤 Focus trap on mobile menu (Tab / Shift+Tab / Escape)
-- 👁️ `focus-visible` outlines — shown for keyboard, hidden for mouse
-- 🎭 `prefers-reduced-motion` respected — all animations disabled gracefully
-- 📱 Safe area insets for notched iPhones and Android cutouts
-
----
-
-## 📄 License
+- Production build and TypeScript checks passed.
+- All three original project records and the Maxgen internship were checked for exact preservation.
+- All 22 skills and tools from the non-tech resume are covered; original technical skills are retained.
+- The profile count is 2 internships, including Budventure from August 2026 to Present.
+- The profile animation plays continuously using CSS, with a static reduced-motion state.
+- All external link destinations match the supplied project.
+- Internal anchors and required local asset paths were checked.
+- The sampled text/background color pairs exceed 4.5:1 contrast.
+- Browser-based interaction tests, visual checks on physical devices, and Lighthouse measurements have not been performed. No Lighthouse score is claimed.
 
 © 2026 Dev Raval. All rights reserved.
-
----
-
-<div align="center">
-
-[🌐 portfolio.devraval.dev](https://portfolio.devraval.dev) · [💻 GitHub](https://github.com/DevRaval2604) · [🔗 LinkedIn](https://linkedin.com/in/devraval2604) · [📧 Email](mailto:devraval2004@gmail.com)
-
-</div>
