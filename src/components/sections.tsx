@@ -138,7 +138,7 @@ function ExperienceSection() {
             <span className="icon-tile"><FiBriefcase aria-hidden="true" /></span>
             <p className="experience-date">May 2025 – July 2025</p>
             <h3>Flutter Developer Intern</h3>
-            <p className="company-name">Maxgen Technologies Pvt. Ltd</p>
+            <p className="company-name">Maxgen Technologies Pvt. Ltd.</p>
             <p className="location"><FiMapPin aria-hidden="true" />Ahmedabad, Gujarat</p>
           </div>
           <div className="experience-details">
